@@ -76,6 +76,9 @@ function renderHeader() {
                                     <i class="fas fa-user-circle"></i>
                                 </button>
                                 <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg py-2 hidden group-hover:block">
+                                    <a href="./profile.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                        <i class="fas fa-user-circle mr-2"></i>Profile
+                                    </a>
                                     <a href="./dashboard.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600" data-i18n="nav.dashboard">Dashboard</a>
                                     ${isAdminUser ? `<a href="./admin.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600" data-i18n="nav.admin">Admin Panel</a>` : ''}
                                     <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600" data-i18n="nav.logout">Logout</button>
@@ -123,6 +126,9 @@ function renderHeader() {
                         <a href="./about.html" class="block py-2 hover:text-pink-600 transition" data-i18n="nav.about">About</a>
                         <a href="./contact.html" class="block py-2 hover:text-pink-600 transition" data-i18n="nav.contact">Contact</a>
                         ${isAuth ? `
+                            <a href="./profile.html" class="block py-2 hover:text-pink-600 transition">
+                                <i class="fas fa-user-circle mr-2"></i>Profile
+                            </a>
                             <a href="./dashboard.html" class="block py-2 hover:text-pink-600 transition" data-i18n="nav.dashboard">Dashboard</a>
                             ${isAdminUser ? `<a href="./admin.html" class="block py-2 hover:text-pink-600 transition" data-i18n="nav.admin">Admin Panel</a>` : ''}
                             <button onclick="logout()" class="block py-2 hover:text-pink-600 transition text-left" data-i18n="nav.logout">Logout</button>

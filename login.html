@@ -42,8 +42,14 @@
 
                         <div>
                             <label class="block text-sm font-medium mb-2">Password</label>
-                            <input type="password" required
-                                class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            <div class="relative">
+                                <input type="password" id="login-password" required
+                                    class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                <button type="button" onclick="togglePasswordVisibility('login-password')"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                                    <i class="far fa-eye" id="login-password-icon"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="flex items-center justify-between">
@@ -51,7 +57,8 @@
                                 <input type="checkbox" class="mr-2">
                                 <span class="text-sm">Remember me</span>
                             </label>
-                            <a href="#" class="text-sm text-pink-600 hover:underline">Forgot password?</a>
+                            <a href="#" onclick="showForgotPassword(event)"
+                                class="text-sm text-pink-600 hover:underline">Forgot password?</a>
                         </div>
 
                         <button type="submit"
@@ -106,14 +113,26 @@
 
                         <div>
                             <label class="block text-sm font-medium mb-2">Password</label>
-                            <input type="password" required minlength="6"
-                                class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            <div class="relative">
+                                <input type="password" id="register-password" required minlength="6"
+                                    class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                <button type="button" onclick="togglePasswordVisibility('register-password')"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                                    <i class="far fa-eye" id="register-password-icon"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium mb-2">Confirm Password</label>
-                            <input type="password" required minlength="6"
-                                class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            <div class="relative">
+                                <input type="password" id="register-confirm-password" required minlength="6"
+                                    class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                <button type="button" onclick="togglePasswordVisibility('register-confirm-password')"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                                    <i class="far fa-eye" id="register-confirm-password-icon"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <label class="flex items-start">
@@ -152,6 +171,35 @@
             </div>
         </div>
     </main>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-password-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-4">Reset Password</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Enter your email address and we'll send you a reset link.
+            </p>
+
+            <form onsubmit="handleForgotPassword(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" required
+                        class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeForgotPassword()"
+                        class="flex-1 border border-gray-300 dark:border-gray-600 py-3 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-3 rounded-lg font-semibold transition">
+                        Send Reset Link
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div id="footer-component"></div>
 

@@ -23,10 +23,10 @@ function renderFooter() {
                     <div>
                         <h4 class="text-lg font-semibold mb-4" data-i18n="footer.quickLinks">Quick Links</h4>
                         <ul class="space-y-2">
-                            <li><a href="/about.html" class="text-gray-400 hover:text-white transition" data-i18n="footer.about">About Us</a></li>
-                            <li><a href="/contact.html" class="text-gray-400 hover:text-white transition" data-i18n="footer.contact">Contact Us</a></li>
-                            <li><a href="/blog.html" class="text-gray-400 hover:text-white transition" data-i18n="nav.blog">Blog</a></li>
-                            <li><a href="/skin-quiz.html" class="text-gray-400 hover:text-white transition" data-i18n="nav.skinQuiz">Skin Quiz</a></li>
+                            <li><a href="./about.html" class="text-gray-400 hover:text-white transition" data-i18n="footer.about">About Us</a></li>
+                            <li><a href="./contact.html" class="text-gray-400 hover:text-white transition" data-i18n="footer.contact">Contact Us</a></li>
+                            <li><a href="./blog.html" class="text-gray-400 hover:text-white transition" data-i18n="nav.blog">Blog</a></li>
+                            <li><a href="./skin-quiz.html" class="text-gray-400 hover:text-white transition" data-i18n="nav.skinQuiz">Skin Quiz</a></li>
                         </ul>
                     </div>
                     

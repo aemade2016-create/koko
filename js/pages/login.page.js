@@ -59,7 +59,75 @@ function handleRegister(event) {
 }
 
 function socialLogin(provider) {
-    showToast('Info', `${provider} login is not available in demo mode`, 'info');
+    // Simulate OAuth flow
+    showLoading();
+
+    setTimeout(() => {
+        // Create mock authenticated session
+        const mockUser = {
+            name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`,
+            email: `user@${provider}.com`,
+            password: 'oauth_user',
+            role: 'user',
+            loyaltyPoints: 100,
+            orders: [],
+            addresses: []
+        };
+
+        // Save to state
+        AppState.user = mockUser;
+        AppState.isAuthenticated = true;
+        saveStateToStorage();
+
+        hideLoading();
+        showToast('Success', `Logged in with ${provider}!`, 'success');
+
+        // Redirect to home
+        setTimeout(() => {
+            navigateTo('./index.html');
+        }, 1000);
+    }, 1500);
+}
+
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(inputId + '-icon');
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+function showForgotPassword(event) {
+    event.preventDefault();
+    document.getElementById('forgot-password-modal').classList.remove('hidden');
+}
+
+function closeForgotPassword() {
+    document.getElementById('forgot-password-modal').classList.add('hidden');
+}
+
+function handleForgotPassword(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const email = form.querySelector('input[type="email"]').value;
+
+    showLoading();
+
+    // Simulate sending reset email
+    setTimeout(() => {
+        hideLoading();
+        closeForgotPassword();
+        showToast('Success', 'Password reset link sent to your email!', 'success');
+        form.reset();
+    }, 1500);
 }
 
 // Check if already logged in
