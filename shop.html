@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Glow Beauty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+    <div id="header-component"></div>
+
+    <main class="py-8 px-4">
+        <div class="container mx-auto max-w-7xl">
+            <!-- Breadcrumbs -->
+            <div class="mb-6 text-sm">
+                <a href="/index.html" class="text-gray-500 hover:text-pink-600">Home</a>
+                <span class="mx-2">/</span>
+                <span class="text-gray-900 dark:text-white font-semibold">Shop</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Filters Sidebar -->
+                <aside class="lg:w-64 flex-shrink-0">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sticky top-24">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold">Filters</h3>
+                            <button onclick="clearFilters()" class="text-sm text-pink-600 hover:underline">Clear
+                                All</button>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold mb-3">Price Range</h4>
+                            <div class="space-y-2">
+                                <input type="range" id="price-min" min="0" max="1000" value="0"
+                                    oninput="updatePriceFilter()">
+                                <input type="range" id="price-max" min="0" max="1000" value="1000"
+                                    oninput="updatePriceFilter()">
+                                <div class="flex justify-between text-sm">
+                                    <span id="price-min-label">0 EGP</span>
+                                    <span id="price-max-label">1000 EGP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold mb-3">Category</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="category" value="" checked onchange="applyFilters()"
+                                        class="mr-2">
+                                    <span>All</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="category" value="skincare" onchange="applyFilters()"
+                                        class="mr-2">
+                                    <span>Skincare</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="category" value="makeup" onchange="applyFilters()"
+                                        class="mr-2">
+                                    <span>Makeup</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Brands -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold mb-3">Brands</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="CeraVe" onchange="applyFilters()" class="mr-2">
+                                    <span>CeraVe</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="L'Oréal" onchange="applyFilters()" class="mr-2">
+                                    <span>L'Oréal</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="Neutrogena" onchange="applyFilters()" class="mr-2">
+                                    <span>Neutrogena</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="Maybelline" onchange="applyFilters()" class="mr-2">
+                                    <span>Maybelline</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Skin Type -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold mb-3">Skin Type</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="dry" onchange="applyFilters()" class="mr-2">
+                                    <span>Dry</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="oily" onchange="applyFilters()" class="mr-2">
+                                    <span>Oily</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="combination" onchange="applyFilters()" class="mr-2">
+                                    <span>Combination</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" value="sensitive" onchange="applyFilters()" class="mr-2">
+                                    <span>Sensitive</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Products Grid -->
+                <div class="flex-1">
+                    <!-- Toolbar -->
+                    <div class="flex items-center justify-between mb-6">
+                        <p class="text-gray-600 dark:text-gray-400">
+                            <span id="product-count">0</span> products found
+                        </p>
+                        <select onchange="sortProducts(this.value)"
+                            class="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                            <option value="featured">Featured</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Top Rated</option>
+                            <option value="newest">Newest</option>
+                        </select>
+                    </div>
+
+                    <!-- Products -->
+                    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Products will be loaded here -->
+                    </div>
+
+                    <!-- Load More -->
+                    <div class="text-center mt-12">
+                        <button onclick="loadMore()" id="load-more-btn"
+                            class="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-full font-semibold transition">
+                            Load More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-component"></div>
+
+    <a href="https://wa.me/1234567890" target="_blank"
+        class="fixed bottom-6 right-6 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition z-50">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <script src="js/core/state.js"></script>
+    <script src="js/core/i18n.js"></script>
+    <script src="js/core/theme.js"></script>
+    <script src="js/core/router.js"></script>
+    <script src="js/services/product.service.js"></script>
+    <script src="js/services/cart.service.js"></script>
+    <script src="js/services/auth.service.js"></script>
+    <script src="js/components/header.component.js"></script>
+    <script src="js/components/footer.component.js"></script>
+    <script src="js/components/product-card.component.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/shop.page.js"></script>
+</body>
+
+</html>

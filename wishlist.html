@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist - Glow Beauty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+    <div id="header-component"></div>
+
+    <main class="py-8 px-4 min-h-screen">
+        <div class="container mx-auto max-w-7xl">
+            <h1 class="text-4xl font-bold mb-8">My Wishlist</h1>
+
+            <div id="wishlist-products" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                <!-- Products will be loaded here -->
+            </div>
+
+            <div id="empty-wishlist" class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center">
+                <i class="far fa-heart text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-2">Your wishlist is empty</h3>
+                <p class="text-gray-500 mb-6">Save your favorite products here!</p>
+                <a href="./shop.html"
+                    class="inline-block bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-full font-semibold transition">
+                    Start Shopping
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-component"></div>
+
+    <a href="https://wa.me/1234567890" target="_blank"
+        class="fixed bottom-6 right-6 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition z-50">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <script src="./js/core/state.js"></script>
+    <script src="./js/core/i18n.js"></script>
+    <script src="./js/core/theme.js"></script>
+    <script src="./js/core/router.js"></script>
+    <script src="./js/services/product.service.js"></script>
+    <script src="./js/services/cart.service.js"></script>
+    <script src="./js/services/auth.service.js"></script>
+    <script src="./js/components/header.component.js"></script>
+    <script src="./js/components/footer.component.js"></script>
+    <script src="./js/components/product-card.component.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/pages/wishlist.page.js"></script>
+</body>
+
+</html>

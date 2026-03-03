@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium cosmetics and beauty products for all skin types">
+    <meta name="keywords" content="cosmetics, beauty, skincare, makeup">
+    <title>Glow Beauty - Premium Cosmetics Store</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Header Component -->
+    <div id="header-component"></div>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="hero-section" class="relative h-[600px] overflow-hidden">
+            <div class="hero-slider relative h-full">
+                <!-- Slide 1 -->
+                <div class="hero-slide active absolute inset-0 transition-opacity duration-1000">
+                    <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1920&h=600&fit=crop"
+                        alt="Hero 1" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <div class="text-center text-white px-4">
+                            <h1 class="text-5xl md:text-7xl font-bold mb-4" data-i18n="hero.title1">Discover Your Glow
+                            </h1>
+                            <p class="text-xl md:text-2xl mb-8" data-i18n="hero.subtitle1">Premium Beauty Products for
+                                Every Skin Type</p>
+                            <button onclick="navigateTo('shop.html')"
+                                class="bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition">
+                                <span data-i18n="hero.cta">Shop Now</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="hero-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+                    <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=1920&h=600&fit=crop"
+                        alt="Hero 2" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <div class="text-center text-white px-4">
+                            <h1 class="text-5xl md:text-7xl font-bold mb-4" data-i18n="hero.title2">New Arrivals</h1>
+                            <p class="text-xl md:text-2xl mb-8" data-i18n="hero.subtitle2">Explore Our Latest Collection
+                            </p>
+                            <button onclick="navigateTo('shop.html')"
+                                class="bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition">
+                                <span data-i18n="hero.cta">Shop Now</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="hero-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+                    <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1920&h=600&fit=crop"
+                        alt="Hero 3" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <div class="text-center text-white px-4">
+                            <h1 class="text-5xl md:text-7xl font-bold mb-4" data-i18n="hero.title3">Special Offer</h1>
+                            <p class="text-xl md:text-2xl mb-8" data-i18n="hero.subtitle3">Up to 30% Off on Selected
+                                Items</p>
+                            <button onclick="navigateTo('shop.html')"
+                                class="bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition">
+                                <span data-i18n="hero.cta">Shop Now</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slider Controls -->
+            <button onclick="prevSlide()"
+                class="absolute left-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 text-gray-900 w-12 h-12 rounded-full transition">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button onclick="nextSlide()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 text-gray-900 w-12 h-12 rounded-full transition">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </section>
+
+        <!-- Shop by Skin Type -->
+        <section class="py-16 px-4 bg-gray-50 dark:bg-gray-800">
+            <div class="container mx-auto max-w-7xl">
+                <h2 class="text-4xl font-bold text-center mb-12" data-i18n="home.shopBySkinType">Shop by Skin Type</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div onclick="filterBySkinType('dry')" class="cursor-pointer group">
+                        <div
+                            class="bg-white dark:bg-gray-700 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                            <div
+                                class="w-20 h-20 mx-auto mb-4 bg-pink-100 dark:bg-pink-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-droplet text-3xl text-pink-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" data-i18n="skinType.dry">Dry Skin</h3>
+                        </div>
+                    </div>
+                    <div onclick="filterBySkinType('oily')" class="cursor-pointer group">
+                        <div
+                            class="bg-white dark:bg-gray-700 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                            <div
+                                class="w-20 h-20 mx-auto mb-4 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-oil-can text-3xl text-blue-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" data-i18n="skinType.oily">Oily Skin</h3>
+                        </div>
+                    </div>
+                    <div onclick="filterBySkinType('combination')" class="cursor-pointer group">
+                        <div
+                            class="bg-white dark:bg-gray-700 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                            <div
+                                class="w-20 h-20 mx-auto mb-4 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-layer-group text-3xl text-purple-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" data-i18n="skinType.combination">Combination</h3>
+                        </div>
+                    </div>
+                    <div onclick="filterBySkinType('sensitive')" class="cursor-pointer group">
+                        <div
+                            class="bg-white dark:bg-gray-700 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                            <div
+                                class="w-20 h-20 mx-auto mb-4 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-heart text-3xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" data-i18n="skinType.sensitive">Sensitive</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="py-16 px-4">
+            <div class="container mx-auto max-w-7xl">
+                <h2 class="text-4xl font-bold text-center mb-12" data-i18n="home.featuredProducts">Featured Products
+                </h2>
+                <div id="featured-products" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Best Sellers -->
+        <section class="py-16 px-4 bg-gray-50 dark:bg-gray-800">
+            <div class="container mx-auto max-w-7xl">
+                <h2 class="text-4xl font-bold text-center mb-12" data-i18n="home.bestSellers">Best Sellers</h2>
+                <div id="best-sellers" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Brands Section -->
+        <section class="py-16 px-4">
+            <div class="container mx-auto max-w-7xl">
+                <h2 class="text-4xl font-bold text-center mb-12" data-i18n="home.topBrands">Top Brands</h2>
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-8">
+                    <div class="flex items-center justify-center p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                        <span class="text-xl font-bold text-gray-600 dark:text-gray-300">CeraVe</span>
+                    </div>
+                    <div class="flex items-center justify-center p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                        <span class="text-xl font-bold text-gray-600 dark:text-gray-300">Neutrogena</span>
+                    </div>
+                    <div class="flex items-center justify-center p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                        <span class="text-xl font-bold text-gray-600 dark:text-gray-300">L'Oréal</span>
+                    </div>
+                    <div class="flex items-center justify-center p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                        <span class="text-xl font-bold text-gray-600 dark:text-gray-300">Maybelline</span>
+                    </div>
+                    <div class="flex items-center justify-center p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                        <span class="text-xl font-bold text-gray-600 dark:text-gray-300">Garnier</span>
+                    </div>
+                    <div class="flex items-center justify-center p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                        <span class="text-xl font-bold text-gray-600 dark:text-gray-300">Nivea</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-16 px-4 bg-pink-50 dark:bg-gray-800">
+            <div class="container mx-auto max-w-7xl">
+                <h2 class="text-4xl font-bold text-center mb-12" data-i18n="home.testimonials">What Our Customers Say
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white dark:bg-gray-700 rounded-2xl p-8 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">"Amazing products! My skin has never looked
+                            better. Fast delivery and great customer service."</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center">
+                                <span class="font-bold text-pink-600">SH</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="font-semibold">Sarah Hassan</p>
+                                <p class="text-sm text-gray-500">Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 rounded-2xl p-8 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">"Love the variety of products. The skin quiz
+                            helped me find perfect products for my skin type."</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center">
+                                <span class="font-bold text-blue-600">MA</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="font-semibold">Mona Ahmed</p>
+                                <p class="text-sm text-gray-500">Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 rounded-2xl p-8 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">"Authentic products at great prices. The
+                            loyalty points program is a nice bonus!"</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-200 rounded-full flex items-center justify-center">
+                                <span class="font-bold text-purple-600">LK</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="font-semibold">Layla Khalil</p>
+                                <p class="text-sm text-gray-500">Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="py-16 px-4 bg-gradient-to-r from-pink-500 to-purple-600">
+            <div class="container mx-auto max-w-4xl text-center text-white">
+                <h2 class="text-4xl font-bold mb-4" data-i18n="home.newsletter.title">Stay in the Glow</h2>
+                <p class="text-xl mb-8" data-i18n="home.newsletter.subtitle">Get beauty tips, exclusive offers, and new
+                    product alerts</p>
+                <form onsubmit="subscribeNewsletter(event)" class="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
+                    <input type="email" required placeholder="Enter your email"
+                        class="flex-1 px-6 py-4 rounded-full text-gray-900 focus:outline-none focus:ring-4 focus:ring-white">
+                    <button type="submit"
+                        class="bg-white text-pink-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition">
+                        <span data-i18n="home.newsletter.subscribe">Subscribe</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Component -->
+    <div id="footer-component"></div>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/1234567890" target="_blank"
+        class="fixed bottom-6 right-6 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition z-50">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="./js/core/state.js"></script>
+    <script src="./js/core/i18n.js"></script>
+    <script src="./js/core/theme.js"></script>
+    <script src="./js/core/router.js"></script>
+    <script src="./js/services/product.service.js"></script>
+    <script src="./js/services/cart.service.js"></script>
+    <script src="./js/services/auth.service.js"></script>
+    <script src="./js/components/header.component.js"></script>
+    <script src="./js/components/footer.component.js"></script>
+    <script src="./js/components/product-card.component.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/pages/home.page.js"></script>
+</body>
+
+</html>

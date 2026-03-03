@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Glow Beauty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+    <div id="header-component"></div>
+
+    <main class="py-8 px-4">
+        <div class="container mx-auto max-w-7xl">
+            <!-- Breadcrumbs -->
+            <div class="mb-6 text-sm">
+                <a href="./index.html" class="text-gray-500 hover:text-pink-600">Home</a>
+                <span class="mx-2">/</span>
+                <a href="./shop.html" class="text-gray-500 hover:text-pink-600">Shop</a>
+                <span class="mx-2">/</span>
+                <span id="product-breadcrumb" class="text-gray-900 dark:text-white font-semibold">Product</span>
+            </div>
+
+            <div id="product-detail" class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+                <!-- Product will be loaded here -->
+            </div>
+
+            <!-- Related Products -->
+            <section class="mt-16">
+                <h2 class="text-3xl font-bold mb-8" data-i18n="product.relatedProducts">Related Products</h2>
+                <div id="related-products" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <!-- Related products will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="footer-component"></div>
+
+    <a href="https://wa.me/1234567890" target="_blank"
+        class="fixed bottom-6 right-6 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition z-50">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <script src="./js/core/state.js"></script>
+    <script src="./js/core/i18n.js"></script>
+    <script src="./js/core/theme.js"></script>
+    <script src="./js/core/router.js"></script>
+    <script src="./js/services/product.service.js"></script>
+    <script src="./js/services/cart.service.js"></script>
+    <script src="./js/services/auth.service.js"></script>
+    <script src="./js/components/header.component.js"></script>
+    <script src="./js/components/footer.component.js"></script>
+    <script src="./js/components/product-card.component.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/pages/product.page.js"></script>
+</body>
+
+</html>

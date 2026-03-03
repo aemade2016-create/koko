@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Glow Beauty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+    <div id="header-component"></div>
+
+    <main class="py-8 px-4 min-h-screen">
+        <div class="container mx-auto max-w-7xl">
+            <h1 class="text-4xl font-bold mb-8" data-i18n="cart.title">Shopping Cart</h1>
+
+            <div id="cart-content" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Cart Items -->
+                <div class="lg:col-span-2">
+                    <div id="cart-items" class="space-y-4">
+                        <!-- Items will be loaded here -->
+                    </div>
+
+                    <div id="empty-cart"
+                        class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center">
+                        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-2xl font-bold mb-2" data-i18n="cart.empty">Your cart is empty</h3>
+                        <p class="text-gray-500 mb-6">Add some products to get started!</p>
+                        <a href="./shop.html"
+                            class="inline-block bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-full font-semibold transition">
+                            <span data-i18n="cart.continueShopping">Continue Shopping</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sticky top-24">
+                        <h3 class="text-xl font-bold mb-6">Order Summary</h3>
+
+                        <!-- Coupon -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium mb-2">Have a coupon?</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="coupon-input" placeholder="Enter code"
+                                    class="flex-1 px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                                <button onclick="applyCouponCode()"
+                                    class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg font-semibold transition">
+                                    Apply
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">Try: SAVE10, SAVE50, FREESHIP</p>
+                        </div>
+
+                        <!-- Totals -->
+                        <div class="space-y-3 mb-6 pb-6 border-b dark:border-gray-700">
+                            <div class="flex justify-between">
+                                <span data-i18n="cart.subtotal">Subtotal</span>
+                                <span id="cart-subtotal" class="font-semibold">0 EGP</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span data-i18n="cart.shipping">Shipping</span>
+                                <span id="cart-shipping" class="font-semibold">0 EGP</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-500">
+                                <span>Free shipping over 500 EGP</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span data-i18n="cart.tax">Tax (14%)</span>
+                                <span id="cart-tax" class="font-semibold">0 EGP</span>
+                            </div>
+                            <div id="discount-row" class="hidden flex justify-between text-green-600">
+                                <span>Discount</span>
+                                <span id="cart-discount">-0 EGP</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between text-xl font-bold mb-6">
+                            <span data-i18n="cart.total">Total</span>
+                            <span id="cart-total">0 EGP</span>
+                        </div>
+
+                        <button onclick="proceedToCheckout()"
+                            class="w-full bg-pink-600 hover:bg-pink-700 text-white py-4 rounded-lg font-semibold transition mb-3">
+                            <span data-i18n="cart.checkout">Proceed to Checkout</span>
+                        </button>
+
+                        <a href="./shop.html" class="block text-center text-pink-600 hover:underline">
+                            <span data-i18n="cart.continueShopping">Continue Shopping</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-component"></div>
+
+    <a href="https://wa.me/1234567890" target="_blank"
+        class="fixed bottom-6 right-6 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition z-50">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <script src="./js/core/state.js"></script>
+    <script src="./js/core/i18n.js"></script>
+    <script src="./js/core/theme.js"></script>
+    <script src="./js/core/router.js"></script>
+    <script src="./js/services/product.service.js"></script>
+    <script src="./js/services/cart.service.js"></script>
+    <script src="./js/services/auth.service.js"></script>
+    <script src="./js/components/header.component.js"></script>
+    <script src="./js/components/footer.component.js"></script>
+    <script src="./js/components/product-card.component.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/pages/cart.page.js"></script>
+</body>
+
+</html>
