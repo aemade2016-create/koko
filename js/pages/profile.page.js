@@ -1,85 +1,69 @@
-// Profile Page Logic with Firebase Integration
+// Profile Page Logic (Compatible with localStorage)
 
-let currentUser = null;
 let currentProfilePicture = null;
 
-// Initialize Firebase when page loads
+// Initialize profile page
 document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('profile-form')) {
-        // Initialize Firebase
-        const firebaseInitialized = initializeFirebase();
-
-        if (!firebaseInitialized) {
-            showToast('Error', 'Failed to initialize Firebase', 'error');
+        // Check if user is authenticated
+        if (!isAuthenticated()) {
+            showToast('Error', 'Please login to view your profile', 'error');
+            setTimeout(() => navigateTo('./login.html'), 1500);
             return;
         }
 
-        // Check authentication
-        firebase.auth().onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUser = user;
-                await loadUserProfile();
-            } else {
-                // Not authenticated, redirect to login
-                showToast('Error', 'Please login to view your profile', 'error');
-                setTimeout(() => navigateTo('./login.html'), 1500);
-            }
-        });
+        // Load user profile
+        await loadUserProfile();
     }
 });
 
-// Load user profile from Firestore
+// Load user profile from AppState/localStorage
 async function loadUserProfile() {
-    if (!currentUser) {
-        console.error('No user logged in');
-        return;
-    }
-
     try {
         showLoading();
 
-        // Get user document from Firestore
-        const userDoc = await firebase.firestore()
-            .collection('users')
-            .doc(currentUser.uid)
-            .get();
-
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-
-            // Populate form fields
-            document.getElementById('full-name').value = userData.fullName || '';
-            document.getElementById('email').value = currentUser.email || '';
-            document.getElementById('phone-number').value = userData.phoneNumber || '';
-            document.getElementById('address').value = userData.address || '';
-            document.getElementById('city').value = userData.city || '';
-            document.getElementById('postal-code').value = userData.postalCode || '';
-
-            // Update profile picture
-            if (userData.profilePicture) {
-                document.getElementById('profile-picture').src = userData.profilePicture;
-                currentProfilePicture = userData.profilePicture;
-            }
-
-            // Update display info
-            document.getElementById('profile-name-display').textContent = userData.fullName || 'User';
-            document.getElementById('profile-email-display').textContent = currentUser.email || '';
-            document.getElementById('profile-points-display').textContent = userData.loyaltyPoints || 0;
-
-            console.log('Profile loaded successfully');
-        } else {
-            // First time user - create default profile
-            console.log('Creating default profile for new user');
-            document.getElementById('email').value = currentUser.email || '';
-            document.getElementById('profile-email-display').textContent = currentUser.email || '';
-            document.getElementById('profile-name-display').textContent = 'New User';
+        // Check if user is authenticated
+        if (!AppState.isAuthenticated) {
+            hideLoading();
+            showToast('Error', 'Please login first', 'error');
+            setTimeout(() => navigateTo('./login.html'), 1500);
+            return;
         }
 
+        const user = AppState.user;
+
+        if (!user) {
+            hideLoading();
+            showToast('Error', 'User data not found', 'error');
+            setTimeout(() => navigateTo('./login.html'), 1500);
+            return;
+        }
+
+        // Populate form fields
+        document.getElementById('full-name').value = user.name || '';
+        document.getElementById('email').value = user.email || '';
+        document.getElementById('phone-number').value = user.phone || '';
+        document.getElementById('address').value = user.address || '';
+        document.getElementById('city').value = user.city || '';
+        document.getElementById('postal-code').value = user.postalCode || '';
+
+        // Update profile picture
+        if (user.profilePicture) {
+            document.getElementById('profile-picture').src = user.profilePicture;
+            currentProfilePicture = user.profilePicture;
+        }
+
+        // Update display info
+        document.getElementById('profile-name-display').textContent = user.name || 'User';
+        document.getElementById('profile-email-display').textContent = user.email || '';
+        document.getElementById('profile-points-display').textContent = user.loyaltyPoints || 0;
+
         hideLoading();
+        console.log('Profile loaded successfully');
     } catch (error) {
         console.error('Error loading profile:', error);
         hideLoading();
-        showToast('Error', 'Failed to load profile: ' + error.message, 'error');
+        showToast('Error', 'Failed to load profile', 'error');
     }
 }
 
@@ -134,13 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Save user profile to Firestore
+// Save user profile to localStorage
 async function saveUserProfile() {
-    if (!currentUser) {
-        showToast('Error', 'No user logged in', 'error');
-        return;
-    }
-
     try {
         showLoading();
 
@@ -158,52 +137,23 @@ async function saveUserProfile() {
             return;
         }
 
-        // Prepare user data
-        const userData = {
-            fullName: fullName,
-            phoneNumber: phoneNumber,
-            address: address,
-            city: city,
-            postalCode: postalCode,
-            email: currentUser.email,
-            uid: currentUser.uid,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
+        // Update AppState
+        AppState.user.name = fullName;
+        AppState.user.phone = phoneNumber;
+        AppState.user.address = address;
+        AppState.user.city = city;
+        AppState.user.postalCode = postalCode;
 
-        // Add profile picture if changed
+        // Update profile picture if changed
         if (currentProfilePicture) {
-            userData.profilePicture = currentProfilePicture;
+            AppState.user.profilePicture = currentProfilePicture;
         }
 
-        // Check if document exists
-        const userDocRef = firebase.firestore().collection('users').doc(currentUser.uid);
-        const userDoc = await userDocRef.get();
-
-        if (userDoc.exists) {
-            // Update existing document
-            await userDocRef.update(userData);
-        } else {
-            // Create new document with default values
-            userData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            userData.loyaltyPoints = 100; // Welcome bonus
-            userData.role = 'user';
-            userData.orders = [];
-
-            await userDocRef.set(userData);
-        }
+        // Save to localStorage
+        saveStateToStorage();
 
         // Update display
         document.getElementById('profile-name-display').textContent = fullName;
-
-        // Update local state if using localStorage
-        if (AppState && AppState.user) {
-            AppState.user.name = fullName;
-            AppState.user.phone = phoneNumber;
-            AppState.user.address = address;
-            AppState.user.city = city;
-            AppState.user.postalCode = postalCode;
-            saveStateToStorage();
-        }
 
         hideLoading();
         showToast('Success', 'Profile updated successfully!', 'success');
@@ -212,52 +162,17 @@ async function saveUserProfile() {
     } catch (error) {
         console.error('Error saving profile:', error);
         hideLoading();
-        showToast('Error', 'Failed to save profile: ' + error.message, 'error');
+        showToast('Error', 'Failed to save profile', 'error');
     }
 }
 
 // Change password function
 function changePassword() {
-    if (!currentUser) {
-        showToast('Error', 'No user logged in', 'error');
-        return;
-    }
-
-    const newPassword = prompt('Enter your new password (minimum 6 characters):');
-
-    if (!newPassword) return;
-
-    if (newPassword.length < 6) {
-        showToast('Error', 'Password must be at least 6 characters', 'error');
-        return;
-    }
-
-    showLoading();
-
-    currentUser.updatePassword(newPassword)
-        .then(() => {
-            hideLoading();
-            showToast('Success', 'Password updated successfully!', 'success');
-        })
-        .catch((error) => {
-            hideLoading();
-            console.error('Error updating password:', error);
-
-            if (error.code === 'auth/requires-recent-login') {
-                showToast('Error', 'Please logout and login again to change password', 'error');
-            } else {
-                showToast('Error', 'Failed to update password: ' + error.message, 'error');
-            }
-        });
+    showToast('Info', 'Password change feature requires Firebase Authentication. Please use the demo credentials.', 'info');
 }
 
 // Delete account function
 function deleteAccount() {
-    if (!currentUser) {
-        showToast('Error', 'No user logged in', 'error');
-        return;
-    }
-
     const confirmation = confirm('Are you sure you want to delete your account? This action cannot be undone.');
 
     if (!confirmation) return;
@@ -271,55 +186,18 @@ function deleteAccount() {
 
     showLoading();
 
-    // Delete user document from Firestore
-    firebase.firestore()
-        .collection('users')
-        .doc(currentUser.uid)
-        .delete()
-        .then(() => {
-            // Delete Firebase Auth account
-            return currentUser.delete();
-        })
-        .then(() => {
-            hideLoading();
-            showToast('Success', 'Account deleted successfully', 'success');
+    // Clear user data
+    AppState.user = null;
+    AppState.isAuthenticated = false;
 
-            // Clear local storage
-            localStorage.clear();
+    // Clear localStorage
+    localStorage.clear();
 
-            // Redirect to home
-            setTimeout(() => {
-                window.location.href = './index.html';
-            }, 2000);
-        })
-        .catch((error) => {
-            hideLoading();
-            console.error('Error deleting account:', error);
+    hideLoading();
+    showToast('Success', 'Account deleted successfully', 'success');
 
-            if (error.code === 'auth/requires-recent-login') {
-                showToast('Error', 'Please logout and login again to delete account', 'error');
-            } else {
-                showToast('Error', 'Failed to delete account: ' + error.message, 'error');
-            }
-        });
-}
-
-// Logout function
-function logout() {
-    firebase.auth().signOut()
-        .then(() => {
-            // Clear local storage
-            if (typeof AppState !== 'undefined') {
-                AppState.user = null;
-                AppState.isAuthenticated = false;
-                saveStateToStorage();
-            }
-
-            showToast('Success', 'Logged out successfully', 'success');
-            setTimeout(() => navigateTo('./index.html'), 1000);
-        })
-        .catch((error) => {
-            console.error('Error logging out:', error);
-            showToast('Error', 'Failed to logout: ' + error.message, 'error');
-        });
+    // Redirect to home
+    setTimeout(() => {
+        navigateTo('./index.html');
+    }, 2000);
 }
