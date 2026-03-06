@@ -71,11 +71,11 @@ function renderHeader() {
                         
                         <!-- Account -->
                         ${isAuth ? `
-                            <div class="relative group">
-                                <button class="text-xl hover:text-pink-600 transition">
+                            <div class="relative account-dropdown">
+                                <button onclick="toggleAccountMenu(event)" class="text-xl hover:text-pink-600 transition">
                                     <i class="fas fa-user-circle"></i>
                                 </button>
-                                <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg py-2 hidden group-hover:block">
+                                <div id="account-menu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg py-2 hidden z-50">
                                     <a href="./profile.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
                                         <i class="fas fa-user-circle mr-2"></i>Profile
                                     </a>
@@ -211,6 +211,25 @@ function toggleLanguage() {
     // Reload the entire page to apply language changes
     window.location.reload();
 }
+
+// Toggle account menu
+function toggleAccountMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('account-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+
+// Close account menu when clicking outside
+document.addEventListener('click', (event) => {
+    const menu = document.getElementById('account-menu');
+    const accountDropdown = document.querySelector('.account-dropdown');
+
+    if (menu && accountDropdown && !accountDropdown.contains(event.target)) {
+        menu.classList.add('hidden');
+    }
+});
 
 // Initialize header on page load
 document.addEventListener('DOMContentLoaded', () => {
