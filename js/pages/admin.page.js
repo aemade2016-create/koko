@@ -3,42 +3,103 @@
 async function loadAdminPanel() {
     // Check if user is admin
     if (!AppState.user || !AppState.user.isAuthenticated || !AppState.user.role || AppState.user.role !== 'admin') {
-        showToast('Error', 'Access denied. Admin only.', 'error');
+        if (typeof showToast === 'function') {
+            showToast('Error', 'Access denied. Admin only.', 'error');
+        }
         setTimeout(() => navigateTo('./index.html'), 1500);
         return;
     }
 
     console.log('✅ Admin panel access granted');
+
+    // Show loading
+    const container = document.getElementById('products-list');
+    if (container) {
+        container.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-4xl text-pink-600"></i><p class="mt-4 text-gray-500">Loading products...</p></div>';
+    }
+
     await loadProductsList();
     loadOrdersList();
 }
 
 async function loadProductsList() {
-    const products = getStoredProducts(); // Use stored products for admin
-    const container = document.getElementById('products-list');
+    try {
+        // Load products using getAllProducts to ensure they're loaded
+        const products = await getAllProducts();
+        console.log('📦 Admin: Loaded', products.length, 'products');
 
-    if (!container) return;
+        const container = document.getElementById('products-list');
+        if (!container) return;
 
-    container.innerHTML = products.map(product => `
-        <div class="flex items-center gap-4 p-4 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-            <img src="${product.image}" alt="${product.title.en}" class="w-20 h-20 object-cover rounded-lg">
-            <div class="flex-1">
-                <p class="font-semibold">${product.title.en}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">${product.brand} • ${product.price} EGP</p>
-                <p class="text-sm ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}">
-                    Stock: ${product.stock} • Category: ${product.category}
-                </p>
+        if (!products || products.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-box-open text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-xl mb-4">No products found</p>
+                    <button onclick="window.location.href='./reset-products.html'" class="bg-pink-600 text-white px-6 py-3 rounded-lg">
+                        Reset Products
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = products.map(product => `
+            <div class="flex items-center gap-4 p-4 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                <img src="${product.image}" alt="${product.title.en}" class="w-20 h-20 object-cover rounded-lg">
+                <div class="flex-1">
+                    <p class="font-semibold text-lg">${product.title.en}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">${product.title.ar}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <span class="font-semibold">${product.brand}</span> • 
+                        <span class="text-pink-600 font-bold">${product.price} EGP</span>
+                        ${product.oldPrice ? `<span class="line-through text-gray-400 ml-2">${product.oldPrice} EGP</span>` : ''}
+                    </p>
+                    <p class="text-sm mt-1">
+                        <span class="${product.stock > 0 ? 'text-green-600' : 'text-red-600'} font-semibold">
+                            Stock: ${product.stock}
+                        </span> • 
+                        <span class="text-gray-500">Category: ${product.category}</span> •
+                        <span class="text-gray-500">ID: ${product.id}</span>
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-700 px-4 py-2 border border-blue-600 rounded-lg transition hover:bg-blue-50">
+                        <i class="fas fa-edit mr-2"></i>Edit
+                    </button>
+                    <button onclick="confirmDeleteProduct(${product.id})" class="text-red-600 hover:text-red-700 px-4 py-2 border border-red-600 rounded-lg transition hover:bg-red-50">
+                        <i class="fas fa-trash mr-2"></i>Delete
+                    </button>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-700 px-4 py-2 border border-blue-600 rounded-lg transition">
-                    <i class="fas fa-edit mr-2"></i>Edit
-                </button>
-                <button onclick="confirmDeleteProduct(${product.id})" class="text-red-600 hover:text-red-700 px-4 py-2 border border-red-600 rounded-lg transition">
-                    <i class="fas fa-trash mr-2"></i>Delete
-                </button>
-            </div>
-        </div>
-    `).join('');
+        `).join('');
+
+        // Update products count
+        const countElement = document.getElementById('products-count');
+        if (countElement) {
+            countElement.textContent = products.length;
+        }
+
+        console.log('✅ Admin: Products list rendered');
+    } catch (error) {
+        console.error('❌ Error loading products in admin:', error);
+        const container = document.getElementById('products-list');
+        if (container) {
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-6xl text-red-400 mb-4"></i>
+                    <p class="text-red-600 text-xl mb-4">Failed to load products</p>
+                    <p class="text-gray-500 mb-4">${error.message}</p>
+                    <button onclick="window.location.href='./reset-products.html'" class="bg-pink-600 text-white px-6 py-3 rounded-lg mr-2">
+                        Reset Products
+                    </button>
+                    <button onclick="loadProductsList()" class="bg-gray-600 text-white px-6 py-3 rounded-lg">
+                        Retry
+                    </button>
+                </div>
+            `;
+        }
+    }
 }
 
 function loadOrdersList() {
@@ -176,26 +237,35 @@ function showAddProductForm() {
 }
 
 async function editProduct(productId) {
-    const products = getStoredProducts();
-    const product = products.find(p => p.id === parseInt(productId));
+    try {
+        const products = await getAllProducts();
+        const product = products.find(p => p.id === parseInt(productId));
 
-    if (!product) {
-        showToast('Error', 'Product not found', 'error');
-        return;
+        if (!product) {
+            if (typeof showToast === 'function') {
+                showToast('Error', 'Product not found', 'error');
+            }
+            return;
+        }
+
+        document.getElementById('modal-title').textContent = 'Edit Product';
+        document.getElementById('product-id').value = product.id;
+        document.getElementById('title-en').value = product.title.en;
+        document.getElementById('title-ar').value = product.title.ar;
+        document.getElementById('brand').value = product.brand;
+        document.getElementById('price').value = product.price;
+        document.getElementById('old-price').value = product.oldPrice || '';
+        document.getElementById('stock').value = product.stock;
+        document.getElementById('image').value = product.image;
+        document.getElementById('category').value = product.category;
+
+        document.getElementById('product-modal').classList.remove('hidden');
+    } catch (error) {
+        console.error('Error loading product for edit:', error);
+        if (typeof showToast === 'function') {
+            showToast('Error', 'Failed to load product', 'error');
+        }
     }
-
-    document.getElementById('modal-title').textContent = 'Edit Product';
-    document.getElementById('product-id').value = product.id;
-    document.getElementById('title-en').value = product.title.en;
-    document.getElementById('title-ar').value = product.title.ar;
-    document.getElementById('brand').value = product.brand;
-    document.getElementById('price').value = product.price;
-    document.getElementById('old-price').value = product.oldPrice || '';
-    document.getElementById('stock').value = product.stock;
-    document.getElementById('image').value = product.image;
-    document.getElementById('category').value = product.category;
-
-    document.getElementById('product-modal').classList.remove('hidden');
 }
 
 function closeProductModal() {
