@@ -27,13 +27,14 @@ function applyFilters() {
             parseInt(document.getElementById('price-max').value)
         ],
         category: document.querySelector('input[name="category"]:checked')?.value || '',
-        brands: Array.from(document.querySelectorAll('input[type="checkbox"][value="CeraVe"], input[type="checkbox"][value="L\'Oréal"], input[type="checkbox"][value="Neutrogena"], input[type="checkbox"][value="Maybelline"]'))
+        brands: Array.from(document.querySelectorAll('input[type="checkbox"][value="CeraVe"], input[type="checkbox"][value="L\'Oréal"], input[type="checkbox"][value="Neutrogena"], input[type="checkbox"][value="Maybelline"], input[type="checkbox"][value="Garnier"], input[type="checkbox"][value="Nivea"]'))
             .filter(cb => cb.checked)
             .map(cb => cb.value),
-        skinType: Array.from(document.querySelectorAll('input[type="checkbox"][value="dry"], input[type="checkbox"][value="oily"], input[type="checkbox"][value="combination"], input[type="checkbox"][value="sensitive"]'))
+        skinType: Array.from(document.querySelectorAll('input[type="checkbox"][value="dry"], input[type="checkbox"][value="oily"], input[type="checkbox"][value="combination"], input[type="checkbox"][value="sensitive"], input[type="checkbox"][value="normal"], input[type="checkbox"][value="all"]'))
             .filter(cb => cb.checked)
             .map(cb => cb.value),
-        concerns: []
+        concerns: [],
+        sortBy: AppState.filters.sortBy || 'featured'
     };
 
     filteredProducts = filterProducts(allProducts, filters);

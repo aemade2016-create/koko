@@ -9,7 +9,7 @@ function createProductCard(product) {
         <div class="product-card bg-white dark:bg-gray-700 rounded-2xl shadow-lg overflow-hidden">
             <!-- Image -->
             <div class="relative overflow-hidden aspect-square">
-                <a href="/product.html?id=${product.id}">
+                <a href="./product.html?id=${product.id}">
                     <img src="${product.image}" 
                          alt="${product.title[lang]}" 
                          class="w-full h-full object-cover"
@@ -36,7 +36,7 @@ function createProductCard(product) {
             <!-- Info -->
             <div class="p-4">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${product.brand}</p>
-                <a href="/product.html?id=${product.id}">
+                <a href="./product.html?id=${product.id}">
                     <h3 class="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-pink-600 transition">
                         ${product.title[lang]}
                     </h3>
