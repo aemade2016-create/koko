@@ -75,12 +75,25 @@ async function loadShopPage() {
 
 // Apply filters
 function applyFilters() {
+    // Defensive: Validate allProducts exists and is an array
+    if (!Array.isArray(allProducts)) {
+        console.error('❌ applyFilters: allProducts is not an array', allProducts);
+        filteredProducts = [];
+        renderProducts();
+        return;
+    }
+
+    // Defensive: Get filter values safely
+    const priceMinEl = document.getElementById('price-min');
+    const priceMaxEl = document.getElementById('price-max');
+    const categoryEl = document.querySelector('input[name="category"]:checked');
+
     const filters = {
         priceRange: [
-            parseInt(document.getElementById('price-min').value),
-            parseInt(document.getElementById('price-max').value)
+            priceMinEl ? parseInt(priceMinEl.value) : 0,
+            priceMaxEl ? parseInt(priceMaxEl.value) : 10000
         ],
-        category: document.querySelector('input[name="category"]:checked')?.value || '',
+        category: categoryEl?.value || '',
         brands: Array.from(document.querySelectorAll('input[type="checkbox"][value="CeraVe"], input[type="checkbox"][value="L\'Oréal"], input[type="checkbox"][value="Neutrogena"], input[type="checkbox"][value="Maybelline"], input[type="checkbox"][value="Garnier"], input[type="checkbox"][value="Nivea"]'))
             .filter(cb => cb.checked)
             .map(cb => cb.value),
@@ -88,10 +101,28 @@ function applyFilters() {
             .filter(cb => cb.checked)
             .map(cb => cb.value),
         concerns: [],
-        sortBy: AppState.filters.sortBy || 'featured'
+        sortBy: AppState?.filters?.sortBy || 'featured'
     };
 
-    filteredProducts = filterProducts(allProducts, filters);
+    // Defensive: Validate filterProducts function exists
+    if (typeof filterProducts !== 'function') {
+        console.error('❌ applyFilters: filterProducts function not found');
+        filteredProducts = allProducts;
+    } else {
+        try {
+            filteredProducts = filterProducts(allProducts, filters);
+        } catch (error) {
+            console.error('❌ Error in filterProducts:', error);
+            filteredProducts = allProducts;
+        }
+    }
+
+    // Defensive: Ensure filteredProducts is an array
+    if (!Array.isArray(filteredProducts)) {
+        console.warn('⚠️ applyFilters: filteredProducts is not an array, using allProducts');
+        filteredProducts = allProducts;
+    }
+
     displayedCount = 12;
     renderProducts();
 }
@@ -109,29 +140,114 @@ function updatePriceFilter() {
 
 // Sort products
 function sortProductsBy(sortBy) {
-    filteredProducts = sortProducts(filteredProducts, sortBy);
-    renderProducts();
+    // Defensive: Validate filteredProducts is an array
+    if (!Array.isArray(filteredProducts)) {
+        console.error('❌ sortProductsBy: filteredProducts is not an array');
+        return;
+    }
+
+    // Defensive: Validate sortProducts function exists
+    if (typeof sortProducts !== 'function') {
+        console.error('❌ sortProductsBy: sortProducts function not found');
+        renderProducts();
+        return;
+    }
+
+    try {
+        filteredProducts = sortProducts(filteredProducts, sortBy);
+        renderProducts();
+    } catch (error) {
+        console.error('❌ Error in sortProductsBy:', error);
+        renderProducts(); // Render anyway with unsorted products
+    }
 }
 
 // Render products
 function renderProducts() {
     const grid = document.getElementById('products-grid');
+
+    // Defensive: Validate grid element exists
+    if (!grid) {
+        console.error('❌ renderProducts: products-grid element not found');
+        return;
+    }
+
+    // Defensive: Validate filteredProducts is an array
+    if (!Array.isArray(filteredProducts)) {
+        console.error('❌ renderProducts: filteredProducts is not an array', filteredProducts);
+        grid.innerHTML = '<div class="col-span-full text-center py-12 text-red-500">Error: Invalid products data</div>';
+        return;
+    }
+
+    // Defensive: Handle empty products
+    if (filteredProducts.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500 text-xl">No products found</p>
+                <button onclick="clearFilters()" class="mt-4 bg-pink-600 text-white px-6 py-3 rounded-lg">
+                    Clear Filters
+                </button>
+            </div>
+        `;
+
+        // Update count
+        const countElement = document.getElementById('product-count');
+        if (countElement) countElement.textContent = '0';
+
+        return;
+    }
+
     const productsToShow = filteredProducts.slice(0, displayedCount);
 
-    grid.innerHTML = productsToShow.map(product => createProductCard(product)).join('');
+    // Defensive: Filter out invalid products before rendering
+    const validProducts = productsToShow.filter(p => p && p.id);
 
-    document.getElementById('product-count').textContent = filteredProducts.length;
+    if (validProducts.length === 0) {
+        console.warn('⚠️ renderProducts: No valid products to render');
+        grid.innerHTML = '<div class="col-span-full text-center py-12 text-yellow-600">No valid products available</div>';
+        return;
+    }
+
+    // Render products with error handling
+    try {
+        grid.innerHTML = validProducts.map(product => {
+            try {
+                return createProductCard(product);
+            } catch (error) {
+                console.error('❌ Error rendering product:', product.id, error);
+                return ''; // Skip broken products
+            }
+        }).join('');
+    } catch (error) {
+        console.error('❌ Error in renderProducts:', error);
+        grid.innerHTML = '<div class="col-span-full text-center py-12 text-red-500">Error rendering products</div>';
+        return;
+    }
+
+    // Update product count
+    const countElement = document.getElementById('product-count');
+    if (countElement) {
+        countElement.textContent = filteredProducts.length;
+    }
 
     // Show/hide load more button
     const loadMoreBtn = document.getElementById('load-more-btn');
-    if (displayedCount >= filteredProducts.length) {
-        loadMoreBtn.classList.add('hidden');
-    } else {
-        loadMoreBtn.classList.remove('hidden');
+    if (loadMoreBtn) {
+        if (displayedCount >= filteredProducts.length) {
+            loadMoreBtn.classList.add('hidden');
+        } else {
+            loadMoreBtn.classList.remove('hidden');
+        }
     }
 
-    updatePageTranslations();
-    initLazyLoading();
+    // Safe function calls
+    if (typeof updatePageTranslations === 'function') {
+        updatePageTranslations();
+    }
+    if (typeof initLazyLoading === 'function') {
+        initLazyLoading();
+    }
 }
 
 // Load more products
