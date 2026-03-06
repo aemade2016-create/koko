@@ -1,5 +1,38 @@
 /* Custom Styles */
 
+/* CSS Variables for Theme Colors */
+:root {
+    /* Light Mode Colors */
+    --color-primary: #ec4899;
+    --color-primary-hover: #db2777;
+    --color-primary-light: #fce7f3;
+    --color-secondary: #8b5cf6;
+    --color-background: #ffffff;
+    --color-background-alt: #f9fafb;
+    --color-surface: #ffffff;
+    --color-text: #111827;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    --color-overlay: rgba(0, 0, 0, 0.5);
+}
+
+.dark {
+    /* Dark Mode Colors */
+    --color-primary: #ec4899;
+    --color-primary-hover: #f472b6;
+    --color-primary-light: #831843;
+    --color-secondary: #a78bfa;
+    --color-background: #111827;
+    --color-background-alt: #1f2937;
+    --color-surface: #1f2937;
+    --color-text: #f9fafb;
+    --color-text-secondary: #9ca3af;
+    --color-border: #374151;
+    --color-shadow: rgba(0, 0, 0, 0.3);
+    --color-overlay: rgba(0, 0, 0, 0.7);
+}
+
 /* RTL Support */
 [dir="rtl"] {
     direction: rtl;
@@ -79,8 +112,8 @@
 
 /* Loading Spinner */
 .spinner {
-    border: 3px solid rgba(0, 0, 0, 0.1);
-    border-left-color: #ec4899;
+    border: 3px solid var(--color-border);
+    border-left-color: var(--color-primary);
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -126,7 +159,7 @@ input[type="range"] {
     width: 100%;
     height: 6px;
     border-radius: 3px;
-    background: #e5e7eb;
+    background: var(--color-border);
     outline: none;
 }
 
@@ -136,7 +169,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #ec4899;
+    background: var(--color-primary);
     cursor: pointer;
 }
 
@@ -144,7 +177,7 @@ input[type="range"]::-moz-range-thumb {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #ec4899;
+    background: var(--color-primary);
     cursor: pointer;
     border: none;
 }
@@ -205,20 +238,16 @@ img[loading="lazy"].loaded {
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.dark ::-webkit-scrollbar-track {
-    background: #1f2937;
+    background: var(--color-background-alt);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #ec4899;
+    background: var(--color-primary);
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #db2777;
+    background: var(--color-primary-hover);
 }
 
 /* Quantity Input */
@@ -244,13 +273,13 @@ img[loading="lazy"].loaded {
     left: 50%;
     width: 100%;
     height: 2px;
-    background: #e5e7eb;
+    background: var(--color-border);
     transform: translateY(-50%);
     z-index: -1;
 }
 
 .step-indicator.active::after {
-    background: #ec4899;
+    background: var(--color-primary);
 }
 
 /* Filter Sidebar Animation */
@@ -300,12 +329,12 @@ img[loading="lazy"].loaded {
 .price-tag {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #ec4899;
+    color: var(--color-primary);
 }
 
 .old-price {
     text-decoration: line-through;
-    color: #9ca3af;
+    color: var(--color-text-secondary);
     font-size: 1rem;
 }
 
@@ -345,4 +374,262 @@ img[loading="lazy"].loaded {
     .no-print {
         display: none !important;
     }
+}
+
+/* Additional Dark Mode Enhancements */
+
+/* Input Fields Dark Mode */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="tel"],
+.dark textarea,
+.dark select {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark input[type="number"]:focus,
+.dark input[type="tel"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+    border-color: var(--color-primary);
+    background-color: var(--color-background-alt);
+}
+
+/* Button Dark Mode */
+.dark button:not(.bg-pink-600):not(.bg-green-500):not(.bg-blue-600):not(.bg-red-600) {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+/* Card Dark Mode */
+.dark .bg-white {
+    background-color: var(--color-surface) !important;
+}
+
+.dark .bg-gray-50 {
+    background-color: var(--color-background-alt) !important;
+}
+
+.dark .bg-gray-100 {
+    background-color: var(--color-surface) !important;
+}
+
+/* Text Colors Dark Mode */
+.dark .text-gray-600 {
+    color: var(--color-text-secondary) !important;
+}
+
+.dark .text-gray-700 {
+    color: var(--color-text) !important;
+}
+
+.dark .text-gray-900 {
+    color: var(--color-text) !important;
+}
+
+/* Border Colors Dark Mode */
+.dark .border-gray-200,
+.dark .border-gray-300 {
+    border-color: var(--color-border) !important;
+}
+
+/* Shadow Dark Mode */
+.dark .shadow,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+    box-shadow: 0 4px 6px -1px var(--color-shadow), 0 2px 4px -1px var(--color-shadow);
+}
+
+/* Product Card Dark Mode Hover */
+.dark .product-card:hover {
+    box-shadow: 0 20px 25px -5px var(--color-shadow), 0 10px 10px -5px var(--color-shadow);
+}
+
+/* Toast Dark Mode */
+.dark .toast {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+/* Modal Dark Mode */
+.dark .modal-overlay {
+    background-color: var(--color-overlay);
+}
+
+/* Dropdown Menu Dark Mode */
+.dark .group:hover .group-hover\:block {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+}
+
+/* Hero Slider Controls Dark Mode */
+.dark .hero-slide button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.dark .hero-slide button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Skeleton Dark Mode Enhancement */
+.dark .skeleton {
+    background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-background-alt) 50%, var(--color-surface) 75%);
+    background-size: 200% 100%;
+}
+
+/* Link Hover Dark Mode */
+.dark a:hover:not(.bg-pink-600):not(.bg-green-500) {
+    color: var(--color-primary-hover);
+}
+
+/* Table Dark Mode */
+.dark table {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+.dark th {
+    background-color: var(--color-background-alt);
+    border-color: var(--color-border);
+}
+
+.dark td {
+    border-color: var(--color-border);
+}
+
+.dark tr:hover {
+    background-color: var(--color-background-alt);
+}
+
+/* Badge Dark Mode */
+.dark .badge:not(.bg-red-500):not(.bg-pink-600) {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+/* Discount Badge Dark Mode */
+.dark .discount-badge {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Star Rating Dark Mode */
+.dark .star-rating i.active {
+    color: #fbbf24;
+}
+
+/* Wishlist Button Dark Mode */
+.dark .wishlist-btn.active i {
+    color: var(--color-primary);
+}
+
+/* Filter Sidebar Dark Mode */
+.dark .filter-sidebar {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+}
+
+/* Mobile Menu Dark Mode */
+.dark .mobile-menu {
+    background-color: var(--color-surface);
+}
+
+/* Search Results Dark Mode */
+.dark #search-results {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+}
+
+.dark #search-results a:hover {
+    background-color: var(--color-background-alt);
+}
+
+/* Placeholder Text Dark Mode */
+.dark ::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+}
+
+/* Disabled Elements Dark Mode */
+.dark :disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Focus Ring Dark Mode */
+.dark *:focus {
+    outline-color: var(--color-primary);
+}
+
+/* Checkbox and Radio Dark Mode */
+.dark input[type="checkbox"],
+.dark input[type="radio"] {
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+}
+
+.dark input[type="checkbox"]:checked,
+.dark input[type="radio"]:checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* Progress Bar Dark Mode */
+.dark progress {
+    background-color: var(--color-border);
+}
+
+.dark progress::-webkit-progress-bar {
+    background-color: var(--color-border);
+}
+
+.dark progress::-webkit-progress-value {
+    background-color: var(--color-primary);
+}
+
+.dark progress::-moz-progress-bar {
+    background-color: var(--color-primary);
+}
+
+/* Code Block Dark Mode */
+.dark code,
+.dark pre {
+    background-color: var(--color-background-alt);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+/* Divider Dark Mode */
+.dark hr {
+    border-color: var(--color-border);
+}
+
+/* Alert/Notice Dark Mode */
+.dark .alert,
+.dark .notice {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+/* Smooth Theme Transition */
+* {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+}
+
+/* Prevent transition on page load */
+.preload * {
+    transition: none !important;
 }
