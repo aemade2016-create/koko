@@ -192,22 +192,42 @@ function getMockProducts() {
 async function loadProducts() {
     if (productsCache) return productsCache;
 
+    // First try to get from localStorage (for admin-modified products)
+    const stored = localStorage.getItem('products');
+    if (stored) {
+        try {
+            productsCache = JSON.parse(stored);
+            AppState.products = productsCache;
+            console.log('✅ Products loaded from localStorage');
+            return productsCache;
+        } catch (error) {
+            console.error('Failed to parse stored products:', error);
+        }
+    }
+
+    // Fallback to JSON file
     try {
         const response = await fetch('./js/data/products.json');
         productsCache = await response.json();
         AppState.products = productsCache;
+        // Save to localStorage for future use
+        localStorage.setItem('products', JSON.stringify(productsCache));
+        console.log('✅ Products loaded from JSON and saved to localStorage');
         return productsCache;
     } catch (error) {
         console.error('Failed to load products from JSON, using mock data:', error);
         // Use mock data as fallback
         productsCache = getMockProducts();
         AppState.products = productsCache;
+        localStorage.setItem('products', JSON.stringify(productsCache));
         return productsCache;
     }
 }
 
 // Get all products
 async function getAllProducts() {
+    // Clear cache to get fresh data from localStorage
+    productsCache = null;
     return await loadProducts();
 }
 
@@ -314,3 +334,116 @@ async function getRelatedProducts(productId, limit = 4) {
         .filter(p => p.id !== productId && p.category === product.category)
         .slice(0, limit);
 }
+
+
+// ===== ADMIN PRODUCT MANAGEMENT =====
+
+// Initialize products in localStorage
+function initializeProductsStorage() {
+    const stored = localStorage.getItem('products');
+    if (!stored) {
+        localStorage.setItem('products', JSON.stringify(getMockProducts()));
+        console.log('✅ Products initialized in localStorage');
+    }
+}
+
+// Get products from localStorage (for admin operations)
+function getStoredProducts() {
+    const stored = localStorage.getItem('products');
+    return stored ? JSON.parse(stored) : getMockProducts();
+}
+
+// Save products to localStorage
+function saveProducts(products) {
+    localStorage.setItem('products', JSON.stringify(products));
+    productsCache = products;
+    AppState.products = products;
+    console.log('✅ Products saved to localStorage');
+}
+
+// Add new product (Admin only)
+function addProduct(productData) {
+    if (!isAdmin()) {
+        showToast('Error', 'Admin access required', 'error');
+        return false;
+    }
+
+    const products = getStoredProducts();
+
+    // Generate new ID
+    const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 0;
+    const newProduct = {
+        ...productData,
+        id: maxId + 1,
+        rating: 4.5,
+        reviews: 0,
+        featured: false,
+        bestSeller: false
+    };
+
+    products.push(newProduct);
+    saveProducts(products);
+
+    showToast('Success', 'Product added successfully!', 'success');
+    return newProduct;
+}
+
+// Update product (Admin only)
+function updateProduct(productId, productData) {
+    if (!isAdmin()) {
+        showToast('Error', 'Admin access required', 'error');
+        return false;
+    }
+
+    const products = getStoredProducts();
+    const index = products.findIndex(p => p.id === parseInt(productId));
+
+    if (index === -1) {
+        showToast('Error', 'Product not found', 'error');
+        return false;
+    }
+
+    products[index] = {
+        ...products[index],
+        ...productData,
+        id: parseInt(productId) // Preserve ID
+    };
+
+    saveProducts(products);
+    showToast('Success', 'Product updated successfully!', 'success');
+    return products[index];
+}
+
+// Delete product (Admin only)
+function deleteProduct(productId) {
+    if (!isAdmin()) {
+        showToast('Error', 'Admin access required', 'error');
+        return false;
+    }
+
+    const products = getStoredProducts();
+    const filtered = products.filter(p => p.id !== parseInt(productId));
+
+    if (filtered.length === products.length) {
+        showToast('Error', 'Product not found', 'error');
+        return false;
+    }
+
+    saveProducts(filtered);
+    showToast('Success', 'Product deleted successfully!', 'success');
+    return true;
+}
+
+// Update product stock
+function updateProductStock(productId, quantity) {
+    const products = getStoredProducts();
+    const product = products.find(p => p.id === parseInt(productId));
+
+    if (product) {
+        product.stock = Math.max(0, product.stock - quantity);
+        saveProducts(products);
+    }
+}
+
+// Initialize on load
+initializeProductsStorage();

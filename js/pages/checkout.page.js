@@ -126,38 +126,70 @@ function placeOrder() {
     const order = {
         id: Date.now(),
         date: new Date().toISOString(),
-        items: [...AppState.cart.items],
+        items: AppState.cart.items.map(item => ({
+            id: item.id,
+            title: item.title[AppState.ui.language],
+            image: item.image,
+            price: item.price,
+            quantity: item.quantity
+        })),
         shipping: AppState.checkoutData.shipping,
         paymentMethod: AppState.checkoutData.paymentMethod,
         subtotal: AppState.cart.subtotal,
-        shipping: AppState.cart.shipping,
+        shippingCost: AppState.cart.shipping,
         tax: AppState.cart.tax,
         discount: AppState.cart.discount,
         total: AppState.cart.total,
-        status: 'processing'
+        status: 'pending'
     };
 
-    // Add to user orders if logged in
-    if (AppState.isAuthenticated && AppState.user) {
-        if (!AppState.user.orders) {
-            AppState.user.orders = [];
-        }
-        AppState.user.orders.push(order);
+    // Save order to user's orders in localStorage
+    if (isAuthenticated() && AppState.user && AppState.user.profile) {
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const userIndex = users.findIndex(u => u.id === AppState.user.profile.id);
 
-        // Add loyalty points (1 EGP = 1 point)
-        const pointsEarned = Math.floor(order.total);
-        AppState.user.loyaltyPoints = (AppState.user.loyaltyPoints || 0) + pointsEarned;
+        if (userIndex !== -1) {
+            if (!users[userIndex].orders) {
+                users[userIndex].orders = [];
+            }
+            users[userIndex].orders.push(order);
 
-        // First purchase bonus
-        if (AppState.user.orders.length === 1) {
-            AppState.user.loyaltyPoints += 200;
-            showToast('Bonus!', 'You earned 200 bonus points for your first purchase!', 'success');
+            // Add loyalty points (1 EGP = 1 point)
+            const pointsEarned = Math.floor(order.total);
+            users[userIndex].loyaltyPoints = (users[userIndex].loyaltyPoints || 0) + pointsEarned;
+
+            // First purchase bonus
+            if (users[userIndex].orders.length === 1) {
+                users[userIndex].loyaltyPoints += 200;
+                showToast('Bonus!', 'You earned 200 bonus points for your first purchase!', 'success');
+            }
+
+            // Update localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Update AppState
+            if (!AppState.user.orders) {
+                AppState.user.orders = [];
+            }
+            AppState.user.orders.push(order);
+            AppState.user.loyaltyPoints = users[userIndex].loyaltyPoints;
         }
+    } else {
+        // For guest checkout, save to session
+        const guestOrders = JSON.parse(sessionStorage.getItem('guest_orders') || '[]');
+        guestOrders.push(order);
+        sessionStorage.setItem('guest_orders', JSON.stringify(guestOrders));
     }
+
+    // Update product stock
+    AppState.cart.items.forEach(item => {
+        updateProductStock(item.id, item.quantity);
+    });
 
     // Clear cart
     AppState.cart = {
         items: [],
+        itemCount: 0,
         subtotal: 0,
         shipping: 0,
         tax: 0,
@@ -173,10 +205,10 @@ function placeOrder() {
 
     setTimeout(() => {
         hideLoading();
-        showToast('Success', 'Order placed successfully!', 'success');
+        showToast('Success', 'Order placed successfully! Order #' + order.id, 'success');
 
         setTimeout(() => {
-            if (AppState.isAuthenticated) {
+            if (isAuthenticated()) {
                 navigateTo('./dashboard.html');
             } else {
                 navigateTo('./index.html');

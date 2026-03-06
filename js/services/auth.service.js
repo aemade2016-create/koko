@@ -7,9 +7,12 @@ function login(email, password) {
     const user = users.find(u => u.email === email && u.password === password);
 
     if (user) {
+        // Check if this is the admin email
+        const isAdminEmail = email === 'aemade2016@gmail.com';
+
         AppState.user = {
             isAuthenticated: true,
-            role: user.role || 'customer',
+            role: isAdminEmail ? 'admin' : (user.role || 'customer'),
             profile: {
                 id: user.id,
                 email: user.email,
@@ -17,8 +20,15 @@ function login(email, password) {
                 phone: user.phone,
                 address: user.address
             },
-            loyaltyPoints: user.loyaltyPoints || 0
+            loyaltyPoints: user.loyaltyPoints || 0,
+            orders: user.orders || []
         };
+
+        // Update user role in storage if admin
+        if (isAdminEmail && user.role !== 'admin') {
+            user.role = 'admin';
+            localStorage.setItem('users', JSON.stringify(users));
+        }
 
         saveStateToStorage();
         showToast('Success', 'Login successful!', 'success');
@@ -149,17 +159,43 @@ function redeemLoyaltyPoints(points) {
 function initializeAdminUser() {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
 
-    if (!users.find(u => u.role === 'admin')) {
+    // Check if admin email exists
+    const adminEmail = 'aemade2016@gmail.com';
+    let adminUser = users.find(u => u.email === adminEmail);
+
+    if (!adminUser) {
+        // Create admin user
         users.push({
             id: 1,
+            email: adminEmail,
+            password: 'admin123',
+            name: 'Admin',
+            role: 'admin',
+            loyaltyPoints: 0,
+            orders: [],
+            createdAt: new Date().toISOString()
+        });
+        localStorage.setItem('users', JSON.stringify(users));
+        console.log('✅ Admin user created:', adminEmail);
+    } else if (adminUser.role !== 'admin') {
+        // Update existing user to admin
+        adminUser.role = 'admin';
+        localStorage.setItem('users', JSON.stringify(users));
+        console.log('✅ User upgraded to admin:', adminEmail);
+    }
+
+    // Also create default admin account
+    if (!users.find(u => u.email === 'admin@glowbeauty.com')) {
+        users.push({
+            id: 2,
             email: 'admin@glowbeauty.com',
             password: 'admin123',
             name: 'Admin',
             role: 'admin',
             loyaltyPoints: 0,
+            orders: [],
             createdAt: new Date().toISOString()
         });
-
         localStorage.setItem('users', JSON.stringify(users));
     }
 }

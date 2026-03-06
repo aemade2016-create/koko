@@ -2,35 +2,38 @@
 
 async function loadAdminPanel() {
     // Check if user is admin
-    if (!isAuthenticated() || !AppState.user || AppState.user.role !== 'admin') {
+    if (!isAuthenticated() || !isAdmin()) {
         showToast('Error', 'Access denied. Admin only.', 'error');
         setTimeout(() => navigateTo('./index.html'), 1500);
         return;
     }
 
+    console.log('✅ Admin panel access granted');
     await loadProductsList();
     loadOrdersList();
 }
 
 async function loadProductsList() {
-    const products = await getAllProducts();
+    const products = getStoredProducts(); // Use stored products for admin
     const container = document.getElementById('products-list');
 
+    if (!container) return;
+
     container.innerHTML = products.map(product => `
-        <div class="flex items-center gap-4 p-4 border dark:border-gray-700 rounded-lg">
+        <div class="flex items-center gap-4 p-4 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
             <img src="${product.image}" alt="${product.title.en}" class="w-20 h-20 object-cover rounded-lg">
             <div class="flex-1">
                 <p class="font-semibold">${product.title.en}</p>
-                <p class="text-sm text-gray-500">${product.brand} • ${product.price} EGP</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">${product.brand} • ${product.price} EGP</p>
                 <p class="text-sm ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}">
-                    Stock: ${product.stock}
+                    Stock: ${product.stock} • Category: ${product.category}
                 </p>
             </div>
             <div class="flex gap-2">
                 <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-700 px-4 py-2 border border-blue-600 rounded-lg transition">
                     <i class="fas fa-edit mr-2"></i>Edit
                 </button>
-                <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-700 px-4 py-2 border border-red-600 rounded-lg transition">
+                <button onclick="confirmDeleteProduct(${product.id})" class="text-red-600 hover:text-red-700 px-4 py-2 border border-red-600 rounded-lg transition">
                     <i class="fas fa-trash mr-2"></i>Delete
                 </button>
             </div>
@@ -39,54 +42,107 @@ async function loadProductsList() {
 }
 
 function loadOrdersList() {
-    // Get all orders from all users (in real app, this would be from backend)
+    // Get all orders from localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
     const allOrders = [];
 
-    // For demo, just show current user's orders
-    if (AppState.user && AppState.user.orders) {
-        allOrders.push(...AppState.user.orders);
-    }
+    // Collect all orders from all users
+    users.forEach(user => {
+        if (user.orders && user.orders.length > 0) {
+            user.orders.forEach(order => {
+                allOrders.push({
+                    ...order,
+                    userEmail: user.email,
+                    userName: user.name
+                });
+            });
+        }
+    });
 
     const container = document.getElementById('orders-list');
+    if (!container) return;
 
     if (allOrders.length === 0) {
         container.innerHTML = '<p class="text-center text-gray-500 py-8">No orders found</p>';
         return;
     }
 
-    container.innerHTML = allOrders.map(order => {
-        const statusColors = {
-            processing: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-            completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-            pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-        };
+    // Sort by date (newest first)
+    allOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        return `
-            <div class="border dark:border-gray-700 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <p class="font-semibold">Order #${order.id}</p>
-                        <p class="text-sm text-gray-500">${new Date(order.date).toLocaleDateString()}</p>
-                        <p class="text-sm text-gray-500">${order.shipping.email}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xl font-bold">${order.total.toFixed(2)} EGP</p>
-                        <select onchange="updateOrderStatus(${order.id}, this.value)" 
-                            class="mt-2 px-3 py-1 rounded-full text-sm font-semibold ${statusColors[order.status]} border-0">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                        </select>
-                    </div>
-                </div>
+    // Group by status
+    const pending = allOrders.filter(o => o.status === 'pending');
+    const processing = allOrders.filter(o => o.status === 'processing');
+    const completed = allOrders.filter(o => o.status === 'completed');
 
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                    <p><strong>Items:</strong> ${order.items.length}</p>
-                    <p><strong>Payment:</strong> ${order.paymentMethod}</p>
-                </div>
+    container.innerHTML = `
+        <div class="space-y-6">
+            ${renderOrderGroup('Pending Orders', pending, 'yellow')}
+            ${renderOrderGroup('Processing Orders', processing, 'blue')}
+            ${renderOrderGroup('Completed Orders', completed, 'green')}
+        </div>
+    `;
+}
+
+function renderOrderGroup(title, orders, color) {
+    if (orders.length === 0) return '';
+
+    const colorClasses = {
+        yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+        blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+    };
+
+    return `
+        <div>
+            <h3 class="text-xl font-bold mb-4">${title} (${orders.length})</h3>
+            <div class="space-y-3">
+                ${orders.map(order => `
+                    <div class="border dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <p class="font-semibold">Order #${order.id}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${new Date(order.date).toLocaleDateString()} • ${order.userEmail}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${order.shipping?.name || order.userName}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-pink-600">${order.total.toFixed(2)} EGP</p>
+                                <select onchange="updateOrderStatus('${order.userEmail}', ${order.id}, this.value)" 
+                                    class="mt-2 px-3 py-1 rounded-full text-sm font-semibold ${colorClasses[color]} border-0 cursor-pointer">
+                                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                            <p><strong>Items:</strong> ${order.items.length} products</p>
+                            <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+                            <p><strong>Phone:</strong> ${order.shipping?.phone || 'N/A'}</p>
+                            <p><strong>Address:</strong> ${order.shipping?.address || 'N/A'}</p>
+                        </div>
+
+                        <details class="mt-3">
+                            <summary class="cursor-pointer text-pink-600 hover:text-pink-700 font-semibold">View Items</summary>
+                            <div class="mt-2 space-y-2">
+                                ${order.items.map(item => `
+                                    <div class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                                        <img src="${item.image}" alt="${item.title}" class="w-12 h-12 object-cover rounded">
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">${item.title}</p>
+                                            <p class="text-xs text-gray-500">Qty: ${item.quantity} × ${item.price} EGP</p>
+                                        </div>
+                                        <p class="font-semibold">${(item.quantity * item.price).toFixed(2)} EGP</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </details>
+                    </div>
+                `).join('')}
             </div>
-        `;
-    }).join('');
+        </div>
+    `;
 }
 
 function showAdminTab(tab) {
@@ -105,6 +161,11 @@ function showAdminTab(tab) {
             content.classList.add('hidden');
         }
     });
+
+    // Reload data when switching tabs
+    if (tab === 'orders') {
+        loadOrdersList();
+    }
 }
 
 function showAddProductForm() {
@@ -115,7 +176,8 @@ function showAddProductForm() {
 }
 
 async function editProduct(productId) {
-    const product = await getProductById(productId);
+    const products = getStoredProducts();
+    const product = products.find(p => p.id === parseInt(productId));
 
     if (!product) {
         showToast('Error', 'Product not found', 'error');
@@ -140,25 +202,42 @@ function closeProductModal() {
     document.getElementById('product-modal').classList.add('hidden');
 }
 
-async function deleteProduct(productId) {
-    if (!confirm('Are you sure you want to delete this product?')) {
-        return;
-    }
-
-    // In real app, this would call API
-    // For demo, we'll just show success message
-    showToast('Success', 'Product deleted successfully!', 'success');
-    await loadProductsList();
+function confirmDeleteProduct(productId) {
+    showModal(
+        'Delete Product',
+        '<p class="text-gray-600 dark:text-gray-400">Are you sure you want to delete this product? This action cannot be undone.</p>',
+        [
+            {
+                text: 'Cancel',
+                class: 'bg-gray-200 hover:bg-gray-300 text-gray-800',
+                action: 'document.querySelector(".modal-overlay").remove()'
+            },
+            {
+                text: 'Delete',
+                class: 'bg-red-600 hover:bg-red-700 text-white',
+                action: `deleteProductConfirmed(${productId}); document.querySelector(".modal-overlay").remove()`
+            }
+        ]
+    );
 }
 
-function updateOrderStatus(orderId, newStatus) {
-    // Find and update order
-    if (AppState.user && AppState.user.orders) {
-        const order = AppState.user.orders.find(o => o.id === orderId);
+function deleteProductConfirmed(productId) {
+    if (deleteProduct(productId)) {
+        loadProductsList();
+    }
+}
+
+function updateOrderStatus(userEmail, orderId, newStatus) {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.email === userEmail);
+
+    if (user && user.orders) {
+        const order = user.orders.find(o => o.id === orderId);
         if (order) {
             order.status = newStatus;
-            saveStateToStorage();
-            showToast('Success', 'Order status updated!', 'success');
+            localStorage.setItem('users', JSON.stringify(users));
+            showToast('Success', `Order #${orderId} status updated to ${newStatus}`, 'success');
+            loadOrdersList(); // Reload to show in correct group
         }
     }
 }
@@ -170,8 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const productId = document.getElementById('product-id').value;
             const productData = {
-                id: document.getElementById('product-id').value || Date.now(),
                 title: {
                     en: document.getElementById('title-en').value,
                     ar: document.getElementById('title-ar').value
@@ -182,16 +261,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 stock: parseInt(document.getElementById('stock').value),
                 image: document.getElementById('image').value,
                 category: document.getElementById('category').value,
-                rating: 4.5,
-                reviews: 0,
-                description: { en: '', ar: '' },
+                description: {
+                    en: document.getElementById('title-en').value,
+                    ar: document.getElementById('title-ar').value
+                },
                 suitableFor: ['all'],
                 concerns: [],
                 ingredients: []
             };
 
-            // In real app, this would call API
-            showToast('Success', 'Product saved successfully!', 'success');
+            if (productId) {
+                // Update existing product
+                updateProduct(productId, productData);
+            } else {
+                // Add new product
+                addProduct(productData);
+            }
+
             closeProductModal();
             await loadProductsList();
         });
