@@ -635,14 +635,9 @@ img[loading="lazy"].loaded {
 }
 
 
-/* Account Dropdown - Better Hover Behavior */
+/* Account Dropdown - Click to Toggle */
 .account-dropdown {
     position: relative;
-}
-
-.account-dropdown:hover #account-menu,
-#account-menu:hover {
-    display: block !important;
 }
 
 #account-menu {
@@ -656,6 +651,10 @@ img[loading="lazy"].loaded {
     padding: 0.5rem 0;
     z-index: 50;
     animation: fadeInDropdown 0.2s ease-out;
+}
+
+#account-menu.hidden {
+    display: none;
 }
 
 .dark #account-menu {

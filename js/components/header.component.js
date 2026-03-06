@@ -72,7 +72,7 @@ function renderHeader() {
                         <!-- Account -->
                         ${isAuth ? `
                             <div class="relative account-dropdown">
-                                <button class="text-xl hover:text-pink-600 transition">
+                                <button onclick="toggleAccountMenu()" class="text-xl hover:text-pink-600 transition">
                                     <i class="fas fa-user-circle"></i>
                                 </button>
                                 <div id="account-menu" class="hidden">
@@ -202,6 +202,22 @@ async function handleSearch(event) {
         resultsDiv.classList.remove('hidden');
     }
 }
+
+// Toggle account menu
+function toggleAccountMenu() {
+    const menu = document.getElementById('account-menu');
+    menu.classList.toggle('hidden');
+}
+
+// Close account menu when clicking outside
+document.addEventListener('click', (event) => {
+    const accountDropdown = document.querySelector('.account-dropdown');
+    const menu = document.getElementById('account-menu');
+
+    if (accountDropdown && menu && !accountDropdown.contains(event.target)) {
+        menu.classList.add('hidden');
+    }
+});
 
 // Toggle language
 function toggleLanguage() {
