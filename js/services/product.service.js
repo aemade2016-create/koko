@@ -198,7 +198,7 @@ async function loadProducts() {
         try {
             productsCache = JSON.parse(stored);
             AppState.products = productsCache;
-            console.log('✅ Products loaded from localStorage');
+            console.log('✅ Products loaded from localStorage:', productsCache.length);
             return productsCache;
         } catch (error) {
             console.error('Failed to parse stored products:', error);
@@ -208,11 +208,14 @@ async function loadProducts() {
     // Fallback to JSON file
     try {
         const response = await fetch('./js/data/products.json');
+        if (!response.ok) {
+            throw new Error('Failed to fetch products.json');
+        }
         productsCache = await response.json();
         AppState.products = productsCache;
         // Save to localStorage for future use
         localStorage.setItem('products', JSON.stringify(productsCache));
-        console.log('✅ Products loaded from JSON and saved to localStorage');
+        console.log('✅ Products loaded from JSON and saved to localStorage:', productsCache.length);
         return productsCache;
     } catch (error) {
         console.error('Failed to load products from JSON, using mock data:', error);
@@ -220,14 +223,27 @@ async function loadProducts() {
         productsCache = getMockProducts();
         AppState.products = productsCache;
         localStorage.setItem('products', JSON.stringify(productsCache));
+        console.log('✅ Products loaded from mock data:', productsCache.length);
         return productsCache;
     }
 }
 
 // Get all products
 async function getAllProducts() {
-    // Clear cache to get fresh data from localStorage
-    productsCache = null;
+    // Always reload from storage to get latest data
+    const stored = localStorage.getItem('products');
+    if (stored) {
+        try {
+            productsCache = JSON.parse(stored);
+            AppState.products = productsCache;
+            console.log('✅ getAllProducts: Loaded', productsCache.length, 'products');
+            return productsCache;
+        } catch (error) {
+            console.error('Error parsing products:', error);
+        }
+    }
+
+    // If no stored products, load them
     return await loadProducts();
 }
 

@@ -6,17 +6,45 @@ let displayedCount = 12;
 
 // Load shop page
 async function loadShopPage() {
-    showLoading();
-    allProducts = await getAllProducts();
+    try {
+        showLoading();
+        console.log('🔄 Loading shop page...');
 
-    // Check URL parameters
-    const params = getUrlParams();
-    if (params.skinType) {
-        document.querySelector(`input[value="${params.skinType}"]`).checked = true;
+        allProducts = await getAllProducts();
+        console.log('✅ Products loaded:', allProducts.length);
+
+        if (!allProducts || allProducts.length === 0) {
+            console.error('❌ No products found!');
+            hideLoading();
+            document.getElementById('products-grid').innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-xl">No products available</p>
+                    <button onclick="location.reload()" class="mt-4 bg-pink-600 text-white px-6 py-3 rounded-lg">
+                        Reload Page
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        // Check URL parameters
+        const params = getUrlParams();
+        if (params.skinType) {
+            const skinTypeCheckbox = document.querySelector(`input[value="${params.skinType}"]`);
+            if (skinTypeCheckbox) {
+                skinTypeCheckbox.checked = true;
+            }
+        }
+
+        applyFilters();
+        hideLoading();
+        console.log('✅ Shop page loaded successfully');
+    } catch (error) {
+        console.error('❌ Error loading shop page:', error);
+        hideLoading();
+        showToast('Error', 'Failed to load products. Please refresh the page.', 'error');
     }
-
-    applyFilters();
-    hideLoading();
 }
 
 // Apply filters

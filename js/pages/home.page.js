@@ -48,20 +48,70 @@ function initHeroSlider() {
 
 // Load featured products
 async function loadFeaturedProducts() {
-    const container = document.getElementById('featured-products');
-    const products = await getFeaturedProducts(10);
+    try {
+        const container = document.getElementById('featured-products');
+        if (!container) return;
 
-    container.innerHTML = products.map(product => createProductCard(product)).join('');
-    updatePageTranslations();
+        console.log('🔄 Loading featured products...');
+        const products = await getFeaturedProducts(10);
+        console.log('✅ Featured products loaded:', products.length);
+
+        if (!products || products.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-8">
+                    <p class="text-gray-500">No featured products available</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = products.map(product => createProductCard(product)).join('');
+        updatePageTranslations();
+    } catch (error) {
+        console.error('❌ Error loading featured products:', error);
+        const container = document.getElementById('featured-products');
+        if (container) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-8">
+                    <p class="text-red-500">Failed to load products</p>
+                </div>
+            `;
+        }
+    }
 }
 
 // Load best sellers
 async function loadBestSellers() {
-    const container = document.getElementById('best-sellers');
-    const products = await getBestSellers(10);
+    try {
+        const container = document.getElementById('best-sellers');
+        if (!container) return;
 
-    container.innerHTML = products.map(product => createProductCard(product)).join('');
-    updatePageTranslations();
+        console.log('🔄 Loading best sellers...');
+        const products = await getBestSellers(10);
+        console.log('✅ Best sellers loaded:', products.length);
+
+        if (!products || products.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-8">
+                    <p class="text-gray-500">No best sellers available</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = products.map(product => createProductCard(product)).join('');
+        updatePageTranslations();
+    } catch (error) {
+        console.error('❌ Error loading best sellers:', error);
+        const container = document.getElementById('best-sellers');
+        if (container) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-8">
+                    <p class="text-red-500">Failed to load products</p>
+                </div>
+            `;
+        }
+    }
 }
 
 // Filter by skin type
