@@ -2,7 +2,7 @@
 
 async function loadAdminPanel() {
     // Check if user is admin
-    if (!isAuthenticated() || !isAdmin()) {
+    if (!AppState.user || !AppState.user.isAuthenticated || !AppState.user.role || AppState.user.role !== 'admin') {
         showToast('Error', 'Access denied. Admin only.', 'error');
         setTimeout(() => navigateTo('./index.html'), 1500);
         return;
