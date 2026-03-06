@@ -190,7 +190,10 @@ function getMockProducts() {
 
 // Load products from JSON
 async function loadProducts() {
-    if (productsCache) return productsCache;
+    if (productsCache) {
+        console.log('✅ Products already cached:', productsCache.length);
+        return productsCache;
+    }
 
     // First try to get from localStorage (for admin-modified products)
     const stored = localStorage.getItem('products');
@@ -201,15 +204,17 @@ async function loadProducts() {
             console.log('✅ Products loaded from localStorage:', productsCache.length);
             return productsCache;
         } catch (error) {
-            console.error('Failed to parse stored products:', error);
+            console.error('❌ Failed to parse stored products:', error);
+            localStorage.removeItem('products'); // Remove corrupted data
         }
     }
 
     // Fallback to JSON file
+    console.log('📥 Loading products from JSON file...');
     try {
         const response = await fetch('./js/data/products.json');
         if (!response.ok) {
-            throw new Error('Failed to fetch products.json');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         productsCache = await response.json();
         AppState.products = productsCache;
@@ -218,8 +223,9 @@ async function loadProducts() {
         console.log('✅ Products loaded from JSON and saved to localStorage:', productsCache.length);
         return productsCache;
     } catch (error) {
-        console.error('Failed to load products from JSON, using mock data:', error);
+        console.error('❌ Failed to load products from JSON:', error);
         // Use mock data as fallback
+        console.log('⚠️ Using mock data as fallback...');
         productsCache = getMockProducts();
         AppState.products = productsCache;
         localStorage.setItem('products', JSON.stringify(productsCache));
@@ -230,20 +236,24 @@ async function loadProducts() {
 
 // Get all products
 async function getAllProducts() {
+    console.log('📦 getAllProducts called');
+
     // Always reload from storage to get latest data
     const stored = localStorage.getItem('products');
     if (stored) {
         try {
             productsCache = JSON.parse(stored);
             AppState.products = productsCache;
-            console.log('✅ getAllProducts: Loaded', productsCache.length, 'products');
+            console.log('✅ getAllProducts: Loaded', productsCache.length, 'products from localStorage');
             return productsCache;
         } catch (error) {
-            console.error('Error parsing products:', error);
+            console.error('❌ Error parsing products from localStorage:', error);
+            localStorage.removeItem('products'); // Remove corrupted data
         }
     }
 
     // If no stored products, load them
+    console.log('📥 No products in localStorage, loading from file...');
     return await loadProducts();
 }
 

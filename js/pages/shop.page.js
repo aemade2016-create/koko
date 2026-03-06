@@ -7,24 +7,30 @@ let displayedCount = 12;
 // Load shop page
 async function loadShopPage() {
     try {
-        showLoading();
+        // Show loading indicator
+        if (typeof showLoading === 'function') showLoading();
         console.log('🔄 Loading shop page...');
 
+        // Load products
         allProducts = await getAllProducts();
         console.log('✅ Products loaded:', allProducts.length);
 
         if (!allProducts || allProducts.length === 0) {
             console.error('❌ No products found!');
-            hideLoading();
-            document.getElementById('products-grid').innerHTML = `
-                <div class="col-span-full text-center py-12">
-                    <i class="fas fa-exclamation-triangle text-6xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 text-xl">No products available</p>
-                    <button onclick="location.reload()" class="mt-4 bg-pink-600 text-white px-6 py-3 rounded-lg">
-                        Reload Page
-                    </button>
-                </div>
-            `;
+            if (typeof hideLoading === 'function') hideLoading();
+
+            const grid = document.getElementById('products-grid');
+            if (grid) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-exclamation-triangle text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 text-xl">No products available</p>
+                        <button onclick="window.location.href='./reset-products.html'" class="mt-4 bg-pink-600 text-white px-6 py-3 rounded-lg">
+                            Reset Products
+                        </button>
+                    </div>
+                `;
+            }
             return;
         }
 
@@ -38,12 +44,32 @@ async function loadShopPage() {
         }
 
         applyFilters();
-        hideLoading();
+        if (typeof hideLoading === 'function') hideLoading();
         console.log('✅ Shop page loaded successfully');
     } catch (error) {
         console.error('❌ Error loading shop page:', error);
-        hideLoading();
-        showToast('Error', 'Failed to load products. Please refresh the page.', 'error');
+        if (typeof hideLoading === 'function') hideLoading();
+
+        const grid = document.getElementById('products-grid');
+        if (grid) {
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-6xl text-red-400 mb-4"></i>
+                    <p class="text-red-600 text-xl mb-4">Failed to load products</p>
+                    <p class="text-gray-500 mb-4">${error.message}</p>
+                    <button onclick="window.location.href='./reset-products.html'" class="bg-pink-600 text-white px-6 py-3 rounded-lg mr-2">
+                        Reset Products
+                    </button>
+                    <button onclick="location.reload()" class="bg-gray-600 text-white px-6 py-3 rounded-lg">
+                        Reload Page
+                    </button>
+                </div>
+            `;
+        }
+
+        if (typeof showToast === 'function') {
+            showToast('Error', 'Failed to load products. Click "Reset Products" to fix.', 'error');
+        }
     }
 }
 
