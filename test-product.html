@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Product Links</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">اختبار روابط المنتجات</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-bold mb-4">اختبار 1: رابط مباشر</h2>
+            <a href="./product.html?id=1"
+                class="bg-blue-500 text-white px-6 py-3 rounded-lg inline-block hover:bg-blue-600">
+                اضغط هنا لفتح المنتج رقم 1
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-bold mb-4">اختبار 2: رابط JavaScript</h2>
+            <button onclick="window.location.href='./product.html?id=2'"
+                class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600">
+                اضغط هنا لفتح المنتج رقم 2
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-bold mb-4">اختبار 3: navigateTo</h2>
+            <button onclick="testNavigate()" class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600">
+                اضغط هنا لفتح المنتج رقم 3
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4">روابط جميع المنتجات</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <a href="./product.html?id=1" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    1</a>
+                <a href="./product.html?id=2" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    2</a>
+                <a href="./product.html?id=3" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    3</a>
+                <a href="./product.html?id=4" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    4</a>
+                <a href="./product.html?id=5" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    5</a>
+                <a href="./product.html?id=6" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    6</a>
+                <a href="./product.html?id=7" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    7</a>
+                <a href="./product.html?id=8" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    8</a>
+                <a href="./product.html?id=9" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    9</a>
+                <a href="./product.html?id=10" class="border-2 border-blue-500 p-4 rounded-lg hover:bg-blue-50">منتج
+                    10</a>
+            </div>
+        </div>
+
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mt-6">
+            <p class="font-bold">ملاحظة:</p>
+            <p>إذا لم تعمل الروابط، افتح Console (F12) وتحقق من الأخطاء</p>
+        </div>
+    </div>
+
+    <script src="./js/core/router.js"></script>
+    <script>
+        function testNavigate() {
+            if (typeof navigateTo === 'function') {
+                navigateTo('./product.html?id=3');
+            } else {
+                alert('navigateTo function not found!');
+                window.location.href = './product.html?id=3';
+            }
+        }
+
+        console.log('Test page loaded');
+        console.log('navigateTo function exists:', typeof navigateTo === 'function');
+    </script>
+</body>
+
+</html>
