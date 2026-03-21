@@ -15,7 +15,9 @@ function createProductCard(product) {
         if (product.title && typeof product.title === 'object') {
             return product.title[lang] || product.title.en || product.title.ar || 'Product';
         }
-        return product.title || product.name || 'Product';
+        if (product.title && typeof product.title === 'string') return product.title;
+        if (product.name && typeof product.name === 'string') return product.name;
+        return 'Product';
     };
 
     const title = getTitle();

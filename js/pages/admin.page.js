@@ -187,16 +187,21 @@ function renderOrderGroup(title, orders, color) {
                         <details class="mt-3">
                             <summary class="cursor-pointer text-pink-600 hover:text-pink-700 font-semibold">View Items</summary>
                             <div class="mt-2 space-y-2">
-                                ${order.items.map(item => `
+                                ${order.items.map(item => {
+        const lang = AppState?.ui?.language || 'en';
+        const itemTitle = item.title && typeof item.title === 'object'
+            ? (item.title[lang] || item.title.en || item.title.ar || 'Product')
+            : (item.title || 'Product');
+        return `
                                     <div class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                                        <img src="${item.image}" alt="${item.title}" class="w-12 h-12 object-cover rounded">
+                                        <img src="${item.image}" alt="${itemTitle}" class="w-12 h-12 object-cover rounded">
                                         <div class="flex-1">
-                                            <p class="font-medium text-sm">${item.title}</p>
+                                            <p class="font-medium text-sm">${itemTitle}</p>
                                             <p class="text-xs text-gray-500">Qty: ${item.quantity} × ${item.price} EGP</p>
                                         </div>
                                         <p class="font-semibold">${(item.quantity * item.price).toFixed(2)} EGP</p>
                                     </div>
-                                `).join('')}
+                                `}).join('')}
                             </div>
                         </details>
                     </div>

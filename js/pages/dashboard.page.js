@@ -89,16 +89,21 @@ function renderOrders() {
                 </div>
 
                 <div class="space-y-2 mb-4">
-                    ${order.items.slice(0, 2).map(item => `
+                    ${order.items.slice(0, 2).map(item => {
+            const lang = AppState?.ui?.language || 'en';
+            const itemTitle = item.title && typeof item.title === 'object'
+                ? (item.title[lang] || item.title.en || item.title.ar || 'Product')
+                : (item.title || 'Product');
+            return `
                         <div class="flex gap-3">
-                            <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg">
+                            <img src="${item.image}" alt="${itemTitle}" class="w-16 h-16 object-cover rounded-lg">
                             <div class="flex-1">
-                                <p class="font-semibold text-sm">${item.title}</p>
+                                <p class="font-semibold text-sm">${itemTitle}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Qty: ${item.quantity}</p>
                             </div>
                             <p class="font-semibold">${(item.price * item.quantity).toFixed(2)} EGP</p>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                     ${order.items.length > 2 ? `<p class="text-sm text-gray-500 dark:text-gray-400">+${order.items.length - 2} more items</p>` : ''}
                 </div>
 
