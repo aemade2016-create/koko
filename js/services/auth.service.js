@@ -78,9 +78,11 @@ function logout() {
         isAuthenticated: false,
         role: null,
         profile: {},
-        loyaltyPoints: 0
+        loyaltyPoints: 0,
+        orders: []
     };
 
+    sessionStorage.removeItem('auth_state');
     saveStateToStorage();
     showToast('Success', 'Logged out successfully', 'success');
     navigateTo('./index.html');

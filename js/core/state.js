@@ -4,7 +4,8 @@ const AppState = {
         isAuthenticated: false,
         role: null,
         profile: {},
-        loyaltyPoints: 0
+        loyaltyPoints: 0,
+        orders: []
     },
     cart: {
         items: [],
@@ -36,60 +37,55 @@ const AppState = {
 // State subscribers
 const stateSubscribers = {};
 
-// Subscribe to state changes
 function subscribe(path, callback) {
-    if (!stateSubscribers[path]) {
-        stateSubscribers[path] = [];
-    }
+    if (!stateSubscribers[path]) stateSubscribers[path] = [];
     stateSubscribers[path].push(callback);
 }
 
-// Get state value
 function getState(path) {
     const keys = path.split('.');
     let value = AppState;
     for (const key of keys) {
-        value = value[key];
+        value = value?.[key];
         if (value === undefined) return null;
     }
     return value;
 }
 
-// Set state value
 function setState(path, value) {
     const keys = path.split('.');
     let obj = AppState;
-
-    for (let i = 0; i < keys.length - 1; i++) {
-        obj = obj[keys[i]];
-    }
-
+    for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
     obj[keys[keys.length - 1]] = value;
 
-    // Notify subscribers
     if (stateSubscribers[path]) {
-        stateSubscribers[path].forEach(callback => callback(value));
+        stateSubscribers[path].forEach(cb => cb(value));
     }
-
     saveStateToStorage();
 }
 
-// Save state to localStorage — auth is never persisted
+// Save: auth goes to sessionStorage (cleared on browser close), rest to localStorage
 function saveStateToStorage() {
     try {
+        // Cart, wishlist, ui preferences → persist across sessions
         localStorage.setItem('app_state', JSON.stringify({
             cart: AppState.cart,
             wishlist: AppState.wishlist,
             ui: AppState.ui
+        }));
+        // Auth → only for current browser session
+        sessionStorage.setItem('auth_state', JSON.stringify({
+            user: AppState.user
         }));
     } catch (e) {
         console.error('Failed to save state:', e);
     }
 }
 
-// Load state from localStorage — auth always starts fresh
+// Load state on page init
 function loadStateFromStorage() {
     try {
+        // Load persistent state
         const saved = localStorage.getItem('app_state');
         if (saved) {
             const state = JSON.parse(saved);
@@ -97,10 +93,17 @@ function loadStateFromStorage() {
             AppState.wishlist = state.wishlist || AppState.wishlist;
             AppState.ui = state.ui || AppState.ui;
         }
+        // Load session auth
+        const auth = sessionStorage.getItem('auth_state');
+        if (auth) {
+            const { user } = JSON.parse(auth);
+            if (user?.isAuthenticated) {
+                AppState.user = user;
+            }
+        }
     } catch (e) {
         console.error('Failed to load state:', e);
     }
 }
 
-// Initialize state on page load
 loadStateFromStorage();
