@@ -6,15 +6,15 @@
     --color-primary: #ec4899;
     --color-primary-hover: #db2777;
     --color-primary-light: #fce7f3;
-    --color-secondary: #8b5cf6;
+    --color-secondary: #ffffff;
     --color-background: #ffffff;
     --color-background-alt: #f9fafb;
     --color-surface: #ffffff;
     --color-text: #111827;
     --color-text-secondary: #6b7280;
     --color-border: #e5e7eb;
-    --color-shadow: rgba(0, 0, 0, 0.1);
-    --color-overlay: rgba(0, 0, 0, 0.5);
+    --color-shadow: #ffffff;
+    --color-overlay:#ffffff;
 }
 
 .dark {
@@ -691,4 +691,19 @@ img[loading="lazy"].loaded {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Language Toggle Button */
+.lang-toggle-btn {
+    min-width: 64px;
+    justify-content: center;
+    letter-spacing: 0.02em;
+}
+
+.lang-toggle-btn:hover {
+    transform: scale(1.05);
+}
+
+[dir="rtl"] .lang-toggle-btn {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
 }

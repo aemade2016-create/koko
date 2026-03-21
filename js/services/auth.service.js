@@ -83,7 +83,7 @@ function logout() {
 
     saveStateToStorage();
     showToast('Success', 'Logged out successfully', 'success');
-    navigateTo('/index.html');
+    navigateTo('./index.html');
 }
 
 // Check if user is authenticated

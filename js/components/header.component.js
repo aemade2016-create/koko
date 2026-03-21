@@ -44,8 +44,11 @@ function renderHeader() {
                         </button>
                         
                         <!-- Language Toggle -->
-                        <button onclick="toggleLanguage()" class="text-sm font-semibold hover:text-pink-600 transition">
-                            ${lang === 'en' ? 'AR' : 'EN'}
+                        <button onclick="toggleLanguage()" 
+                                title="${lang === 'en' ? 'Switch to Arabic' : 'Switch to English'}"
+                                class="lang-toggle-btn flex items-center gap-1 px-3 py-1.5 rounded-full border-2 border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white transition font-bold text-sm">
+                            <i class="fas fa-globe text-xs"></i>
+                            <span>${lang === 'en' ? 'عربي' : 'EN'}</span>
                         </button>
                         
                         <!-- Theme Toggle -->

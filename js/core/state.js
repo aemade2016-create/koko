@@ -71,15 +71,13 @@ function setState(path, value) {
         stateSubscribers[path].forEach(callback => callback(value));
     }
 
-    // Save to localStorage for persistence
     saveStateToStorage();
 }
 
-// Save state to localStorage
+// Save state to localStorage — auth is never persisted
 function saveStateToStorage() {
     try {
         localStorage.setItem('app_state', JSON.stringify({
-            user: AppState.user,
             cart: AppState.cart,
             wishlist: AppState.wishlist,
             ui: AppState.ui
@@ -89,13 +87,12 @@ function saveStateToStorage() {
     }
 }
 
-// Load state from localStorage
+// Load state from localStorage — auth always starts fresh
 function loadStateFromStorage() {
     try {
         const saved = localStorage.getItem('app_state');
         if (saved) {
             const state = JSON.parse(saved);
-            AppState.user = state.user || AppState.user;
             AppState.cart = state.cart || AppState.cart;
             AppState.wishlist = state.wishlist || AppState.wishlist;
             AppState.ui = state.ui || AppState.ui;

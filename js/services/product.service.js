@@ -199,37 +199,42 @@ async function loadProducts() {
     const stored = localStorage.getItem('products');
     if (stored) {
         try {
-            productsCache = JSON.parse(stored);
-            AppState.products = productsCache;
-            console.log('✅ Products loaded from localStorage:', productsCache.length);
-            return productsCache;
+            const parsed = JSON.parse(stored);
+            // Validate it's a non-empty array with proper structure
+            if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].title) {
+                productsCache = parsed;
+                AppState.products = productsCache;
+                console.log('✅ Products loaded from localStorage:', productsCache.length);
+                return productsCache;
+            } else {
+                console.warn('⚠️ Stored products invalid, clearing...');
+                localStorage.removeItem('products');
+            }
         } catch (error) {
             console.error('❌ Failed to parse stored products:', error);
-            localStorage.removeItem('products'); // Remove corrupted data
+            localStorage.removeItem('products');
         }
     }
 
-    // Fallback to JSON file
+    // Try JSON file (works with a local server)
     console.log('📥 Loading products from JSON file...');
     try {
-        const response = await fetch('./js/data/products.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const response = await fetch('./js/data/products.json', { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         productsCache = await response.json();
         AppState.products = productsCache;
-        // Save to localStorage for future use
         localStorage.setItem('products', JSON.stringify(productsCache));
-        console.log('✅ Products loaded from JSON and saved to localStorage:', productsCache.length);
+        console.log('✅ Products loaded from JSON:', productsCache.length);
         return productsCache;
     } catch (error) {
-        console.error('❌ Failed to load products from JSON:', error);
-        // Use mock data as fallback
-        console.log('⚠️ Using mock data as fallback...');
+        console.warn('⚠️ Could not fetch JSON, using built-in data:', error.message);
         productsCache = getMockProducts();
         AppState.products = productsCache;
         localStorage.setItem('products', JSON.stringify(productsCache));
-        console.log('✅ Products loaded from mock data:', productsCache.length);
+        console.log('✅ Products loaded from built-in data:', productsCache.length);
         return productsCache;
     }
 }
@@ -242,18 +247,24 @@ async function getAllProducts() {
     const stored = localStorage.getItem('products');
     if (stored) {
         try {
-            productsCache = JSON.parse(stored);
-            AppState.products = productsCache;
-            console.log('✅ getAllProducts: Loaded', productsCache.length, 'products from localStorage');
-            return productsCache;
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].title) {
+                productsCache = parsed;
+                AppState.products = productsCache;
+                console.log('✅ getAllProducts: Loaded', productsCache.length, 'products from localStorage');
+                return productsCache;
+            } else {
+                console.warn('⚠️ getAllProducts: Invalid stored products, resetting...');
+                localStorage.removeItem('products');
+            }
         } catch (error) {
             console.error('❌ Error parsing products from localStorage:', error);
-            localStorage.removeItem('products'); // Remove corrupted data
+            localStorage.removeItem('products');
         }
     }
 
-    // If no stored products, load them
-    console.log('📥 No products in localStorage, loading from file...');
+    // If no valid stored products, load them
+    console.log('📥 No valid products in localStorage, loading...');
     return await loadProducts();
 }
 
